@@ -38,9 +38,37 @@ end architecture;
 
 library ieee;
 use ieee.std_logic_1164.all;
+use std.textio.all;
+use work.components.all;
 
-entity TB_ALU is end;
+entity TB_ALU  is end;
 
 architecture impl1 of TB_ALU is
+    signal sA, sB, sF: std_logic_vector(31 downto 0);
+    signal sControl: std_logic_vector(3 downto 0);
+    signal sClk: std_logic := '0';
 begin
-end;
+    uut1: ALU port map (sA, sB, sCLK, sControl, sF);
+
+    clk1: process is
+    begin
+        sClk <= not sClk;
+        wait for 100 ns;
+    end process;
+
+    signalTests1: process
+        variable buf: line;
+    begin
+        sA <= x"00000002";
+        sB <= x"00000003";
+        sControl <= "0010"; -- Addition
+        wait for 30 ns;
+        assert (sF /= x"00000005");
+        wait for 100 ns;
+        assert (sF = x"00000005");
+
+        write(buf, string'("Assertions tb_alu complete"));
+        writeline(output, buf);
+        wait;
+    end process;
+end architecture;
