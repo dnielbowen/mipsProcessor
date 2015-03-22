@@ -16,9 +16,9 @@ end entity;
 
 architecture impl1 of MEM_1K is
     type BYTE_ARR is array(natural range <>) of std_logic_vector(7 downto 0);
-    signal mem: BYTE_ARR(1023 downto 0) := (others => (others => '0'));
+    -- Goes over 1K a bit to allow a 1-word memory access at index 1K (1023)
+    signal mem: BYTE_ARR(1026 downto 0) := (others => (others => '0'));
 begin
-
     p1: process (CLK) is
         variable i: natural;
     begin
@@ -29,9 +29,9 @@ begin
                 mem(i+2) <= DATAW(23 downto 16);
                 mem(i+1) <= DATAW(15 downto 08);
                 mem(i+0) <= DATAW(07 downto 00);
-                DATAR <= (others => '0');
+                --DATAR <= (others => '0');
             else
-                DATAR <= mem(i+3) & mem(i+2) & mem(i+1) & mem(i+0);
+                --DATAR <= mem(i+3) & mem(i+2) & mem(i+1) & mem(i+0);
 
                 -- Add some initial data to the memory
                 -- LIMITATIONS: this data is essentially read-only --- any 
@@ -40,12 +40,19 @@ begin
                 mem( 0) <= x"04";
                 mem( 4) <= x"02";
                 mem( 5) <= x"FF";
-                mem( 8) <= x"03";
-                mem(12) <= x"04";
+                mem( 8) <= x"88";
+                mem(12) <= x"07";
                 mem(16) <= x"05";
                 mem(64) <= x"40";
             end if;
         end if;
+    end process;
+
+    p2: process (ADDR) is
+        variable i: natural;
+    begin
+        i := conv_integer(unsigned(ADDR));
+        DATAR <= mem(i+3) & mem(i+2) & mem(i+1) & mem(i+0);
     end process;
 end;
 

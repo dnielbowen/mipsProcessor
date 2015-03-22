@@ -20,31 +20,31 @@ architecture impl1 of REGISTER_ARRAY_32_32 is
     type REG_ARRAY is array(natural range <>) of std_logic_vector(31 downto 0);
     signal regs: REG_ARRAY(31 downto 0) := (others => (others => '0'));
 begin
-    p1: process (CLK) is
+    p1: process (CLK, ADDR1, ADDR2) is
         variable i1,i2,iW: natural;
     begin
         i1 := conv_integer(unsigned(ADDR1));
         i2 := conv_integer(unsigned(ADDR2));
         iW := conv_integer(unsigned(ADDRW));
 
+        REG1 <= regs(i1);
+        REG2 <= regs(i2);
         if rising_edge(CLK) then
             if ENW = '1' then
                 regs(iW) <= DATA;
 
-                if i1 = iW then
-                    REG1 <= DATA;
-                else
-                    REG1 <= regs(i1);
-                end if;
+             --   if i1 = iW then
+             --       REG1 <= DATA;
+             --   else
+             --       REG1 <= regs(i1);
+             --   end if;
 
-                if i2 = iW then
-                    REG2 <= DATA;
-                else
-                    REG2 <= regs(i2);
-                end if;
+             --   if i2 = iW then
+             --       REG2 <= DATA;
+             --   else
+             --       REG2 <= regs(i2);
+             --   end if;
             else
-                REG1 <= regs(i1);
-                REG2 <= regs(i2);
             end if;
         end if;
     end process;

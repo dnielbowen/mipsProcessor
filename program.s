@@ -1,3 +1,6 @@
+# Instructions implemented:
+# lw, sw, beq, add, sub, and, or
+
 .set noreorder
 nop
 
@@ -11,4 +14,4 @@ lw $t2,0x40($gp)    # Contains 64
 add $t3,$t1,$t2     # $t3 should contain 66
 sw $t3,0x44($gp)    # Store 66 at address 68 (0x44)
 here:
-b here
+beq $0,$0,here

@@ -5,7 +5,7 @@ use ieee.std_logic_arith.all;
 -- Read-only (instruction) memory, 1KB
 entity MEM_RO_1K is
     port (
-        CLK:  in  std_logic;
+        CLK:  in  std_logic; -- WARNING: clock not used!
         ADDR: in  std_logic_vector(9 downto 0);
         DATA: out std_logic_vector(31 downto 0)
     );
@@ -31,13 +31,11 @@ begin
     -- 0x1000ffff b 18 <here>
     mem(24)<=x"ff"; mem(25)<=x"ff"; mem(26)<=x"00"; mem(27)<=x"10";
 
-    p1: process (CLK) is
+    p1: process (ADDR) is
         variable i: natural;
     begin
         i := conv_integer(unsigned(ADDR));
-        if rising_edge(CLK) then
-            DATA <= mem(i+3) & mem(i+2) & mem(i+1) & mem(i+0);
-        end if;
+        DATA <= mem(i+3) & mem(i+2) & mem(i+1) & mem(i+0);
     end process;
 end;
 

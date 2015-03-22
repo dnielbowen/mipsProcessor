@@ -11,6 +11,6 @@ end entity;
 architecture impl1 of SIGNEXTEND_16_32 is
     signal extension : std_logic_vector(15 downto 0);
 begin
-    extension <= x"0000" when X(15) = '0' else x"1111";
+    extension <= x"0000" when X(15) = '0' else x"FFFF";
     F <= extension & X;
 end architecture;

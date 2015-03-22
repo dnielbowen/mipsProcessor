@@ -18,20 +18,28 @@ begin
     -- The Boolean-std_logic conversion function is in Mentor Graphics' IEEE
     aLessThanB <= to_stdlogic(signed(A) < signed(B));
 
-    p1: process (CLK) is
-    begin
-        if rising_edge(CLK) then
-            case CONTROL is
-                when x"0" => F <= A AND B;
-                when x"1" => F <= A OR B;
-                when x"C" => F <= A NOR B;
-                when x"2" => F <= std_logic_vector(unsigned(A) + unsigned(B));
-                when x"6" => F <= std_logic_vector(unsigned(A) - unsigned(B));
-                when x"7" => F <= (0 => aLessThanB, others => '0');
-                when others => F <= (others => '0');
-            end case;
-        end if;
-    end process;
+    F <= A AND B when CONTROL = x"0" else
+         A OR B  when CONTROL = x"1" else
+         A NOR B when CONTROL = x"C" else
+         std_logic_vector(unsigned(A) + unsigned(B)) when CONTROL = x"2" else
+         std_logic_vector(unsigned(A) - unsigned(B)) when CONTROL = x"6" else
+         (0 => aLessThanB, others => '0') when CONTROL = x"7" else
+         (others => '0');
+
+--    p1: process (CLK) is
+--    begin
+--        if rising_edge(CLK) then
+--            case CONTROL is
+--                when x"0" => F <= A AND B;
+--                when x"1" => F <= A OR B;
+--                when x"C" => F <= A NOR B;
+--                when x"2" => F <= std_logic_vector(unsigned(A) + unsigned(B));
+--                when x"6" => F <= std_logic_vector(unsigned(A) - unsigned(B));
+--                when x"7" => F <= (0 => aLessThanB, others => '0');
+--                when others => F <= (others => '0');
+--            end case;
+--        end if;
+--    end process;
 end architecture;
 
 ----------------------------------------------------------------------
