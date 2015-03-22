@@ -16,13 +16,20 @@ architecture impl1 of MEM_RO_1K is
     signal mem: BYTE_ARR := (others => (others => '0'));
 begin
     -- Enter the program (opcodes) here
-    --mem( 0) <= x"8c1c0000"; -- lw    gp,0(zero)
-    mem(0)<=x"00"; mem(1)<=x"00"; mem(2)<=x"1c"; mem(3)<=x"8c";
-    mem( 4) <= x"8f890004"; -- lw    t1,4(gp)
-    mem( 8) <= x"8f8a0040"; -- lw    t2,64(gp)
-    mem(12) <= x"012a5820"; -- add   t3,t1,t2
-    mem(16) <= x"af8b0044"; -- sw    t3,68(gp)
-    mem(20) <= x"1000ffff"; -- b     14 <here>
+    -- 0x00000000 nop
+    mem(0)<=x"00"; mem(1)<=x"00"; mem(2)<=x"00"; mem(3)<=x"00";
+    -- 0x8c1c0000 lw gp,0(zero)
+    mem(4)<=x"00"; mem(5)<=x"00"; mem(6)<=x"1c"; mem(7)<=x"8c";
+    -- 0x8f890004 lw t1,4(gp)
+    mem(8)<=x"04"; mem(9)<=x"00"; mem(10)<=x"89"; mem(11)<=x"8f";
+    -- 0x8f8a0040 lw t2,64(gp)
+    mem(12)<=x"40"; mem(13)<=x"00"; mem(14)<=x"8a"; mem(15)<=x"8f";
+    -- 0x012a5820 add t3,t1,t2
+    mem(16)<=x"20"; mem(17)<=x"58"; mem(18)<=x"2a"; mem(19)<=x"01";
+    -- 0xaf8b0044 sw t3,68(gp)
+    mem(20)<=x"44"; mem(21)<=x"00"; mem(22)<=x"8b"; mem(23)<=x"af";
+    -- 0x1000ffff b 18 <here>
+    mem(24)<=x"ff"; mem(25)<=x"ff"; mem(26)<=x"00"; mem(27)<=x"10";
 
     p1: process (CLK) is
         variable i: natural;

@@ -16,8 +16,10 @@ VHD_OBJ = components.o \
 ASM = program.s
 PROGOBJ = program.o
 
+# TB = tb_registers
 # TB = tb_mem_ro_1k
 TB = tb_cpu
+# TB = tb_mem1k
 IMPL = impl1
 SIMDUR = 1ms
 
@@ -34,12 +36,16 @@ ex:
 # Run `make prog` and copy-paste the contents into mem1k_RO.vhd (the program 
 # memory). You'll have to change the indices to 4-byte offsets (eg 0 4 8, etc)
 prog:
-	$(AS) -mips32 $(ASM) -o $(PROGOBJ)
-	$(OBJDUMP) -d program.o | \
+	$(AS) -mips32 -O0 $(ASM) -o $(PROGOBJ)
+	#$(OBJDUMP) -d program.o | \
+	#    grep -P '[\da-f]+:' | \
+	#    nl -v0 | \
+	#    perl -pe \
+	#    '$$i=0; s/\s+(\d+)\s+\w+:\s+(\w\w)(\w\w)(\w\w)(\w\w)\s+.*/'
+	#'"mem(".$$i++.")<=$$2"/xge'
+	$(OBJDUMP) -d $(PROGOBJ) | \
 	    grep -P '[\da-f]+:' | \
-	    nl -v0 | \
-	    perl -pe \
-	    's/\s*(\d+)\s+\w+:\s+([\da-f]+)\s+(.*)/mem(\1) <= x"\2"; -- \3/'
+	    python convertOpcodes.py
 
 clean:
 	rm -f *.cf tb_* *.ghw *.vcd *.o

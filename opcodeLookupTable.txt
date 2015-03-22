@@ -1,0 +1,7 @@
+8C1C0000 lw gp,0(zero)
+8F890004 lw t1,4(gp)
+8F8A0040 lw t2,64(gp)
+012A5820 add t3,t1,t2
+AF8B0044 sw t3,68(gp)
+1000FFFF b 14 <here>
+00000000 nop

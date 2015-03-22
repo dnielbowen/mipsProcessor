@@ -1,0 +1,100 @@
+[*]
+[*] GTKWave Analyzer v3.3.49 (w)1999-2013 BSI
+[*] Sun Mar 22 19:02:57 2015
+[*]
+[dumpfile] "/home/eldewen/test/vhdl/singleCycleMIPS/tb_cpu-impl1.ghw"
+[dumpfile_mtime] "Sun Mar 22 18:52:47 2015"
+[dumpfile_size] 430732
+[savefile] "/home/eldewen/test/vhdl/singleCycleMIPS/signals.gtkw"
+[timestart] 0
+[size] 1000 600
+[pos] -1 -1
+*-28.954512 317000000 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+[treeopen] top.
+[treeopen] top.tb_cpu.
+[treeopen] top.tb_cpu.uut1.
+[treeopen] top.tb_cpu.uut1.meminstr1.mem.
+[sst_width] 272
+[signals_width] 290
+[sst_expanded] 1
+[sst_vpaned_height] 292
+@28
+top.tb_cpu.uut1.clk
+@200
+----REGISTERS---
+@22
+#{top.tb_cpu.uut1.registerfile1.regs[8][31:0]} top.tb_cpu.uut1.registerfile1.regs[8][31] top.tb_cpu.uut1.registerfile1.regs[8][30] top.tb_cpu.uut1.registerfile1.regs[8][29] top.tb_cpu.uut1.registerfile1.regs[8][28] top.tb_cpu.uut1.registerfile1.regs[8][27] top.tb_cpu.uut1.registerfile1.regs[8][26] top.tb_cpu.uut1.registerfile1.regs[8][25] top.tb_cpu.uut1.registerfile1.regs[8][24] top.tb_cpu.uut1.registerfile1.regs[8][23] top.tb_cpu.uut1.registerfile1.regs[8][22] top.tb_cpu.uut1.registerfile1.regs[8][21] top.tb_cpu.uut1.registerfile1.regs[8][20] top.tb_cpu.uut1.registerfile1.regs[8][19] top.tb_cpu.uut1.registerfile1.regs[8][18] top.tb_cpu.uut1.registerfile1.regs[8][17] top.tb_cpu.uut1.registerfile1.regs[8][16] top.tb_cpu.uut1.registerfile1.regs[8][15] top.tb_cpu.uut1.registerfile1.regs[8][14] top.tb_cpu.uut1.registerfile1.regs[8][13] top.tb_cpu.uut1.registerfile1.regs[8][12] top.tb_cpu.uut1.registerfile1.regs[8][11] top.tb_cpu.uut1.registerfile1.regs[8][10] top.tb_cpu.uut1.registerfile1.regs[8][9] top.tb_cpu.uut1.registerfile1.regs[8][8] top.tb_cpu.uut1.registerfile1.regs[8][7] top.tb_cpu.uut1.registerfile1.regs[8][6] top.tb_cpu.uut1.registerfile1.regs[8][5] top.tb_cpu.uut1.registerfile1.regs[8][4] top.tb_cpu.uut1.registerfile1.regs[8][3] top.tb_cpu.uut1.registerfile1.regs[8][2] top.tb_cpu.uut1.registerfile1.regs[8][1] top.tb_cpu.uut1.registerfile1.regs[8][0]
+#{top.tb_cpu.uut1.registerfile1.regs[9][31:0]} top.tb_cpu.uut1.registerfile1.regs[9][31] top.tb_cpu.uut1.registerfile1.regs[9][30] top.tb_cpu.uut1.registerfile1.regs[9][29] top.tb_cpu.uut1.registerfile1.regs[9][28] top.tb_cpu.uut1.registerfile1.regs[9][27] top.tb_cpu.uut1.registerfile1.regs[9][26] top.tb_cpu.uut1.registerfile1.regs[9][25] top.tb_cpu.uut1.registerfile1.regs[9][24] top.tb_cpu.uut1.registerfile1.regs[9][23] top.tb_cpu.uut1.registerfile1.regs[9][22] top.tb_cpu.uut1.registerfile1.regs[9][21] top.tb_cpu.uut1.registerfile1.regs[9][20] top.tb_cpu.uut1.registerfile1.regs[9][19] top.tb_cpu.uut1.registerfile1.regs[9][18] top.tb_cpu.uut1.registerfile1.regs[9][17] top.tb_cpu.uut1.registerfile1.regs[9][16] top.tb_cpu.uut1.registerfile1.regs[9][15] top.tb_cpu.uut1.registerfile1.regs[9][14] top.tb_cpu.uut1.registerfile1.regs[9][13] top.tb_cpu.uut1.registerfile1.regs[9][12] top.tb_cpu.uut1.registerfile1.regs[9][11] top.tb_cpu.uut1.registerfile1.regs[9][10] top.tb_cpu.uut1.registerfile1.regs[9][9] top.tb_cpu.uut1.registerfile1.regs[9][8] top.tb_cpu.uut1.registerfile1.regs[9][7] top.tb_cpu.uut1.registerfile1.regs[9][6] top.tb_cpu.uut1.registerfile1.regs[9][5] top.tb_cpu.uut1.registerfile1.regs[9][4] top.tb_cpu.uut1.registerfile1.regs[9][3] top.tb_cpu.uut1.registerfile1.regs[9][2] top.tb_cpu.uut1.registerfile1.regs[9][1] top.tb_cpu.uut1.registerfile1.regs[9][0]
+#{top.tb_cpu.uut1.registerfile1.regs[10][31:0]} top.tb_cpu.uut1.registerfile1.regs[10][31] top.tb_cpu.uut1.registerfile1.regs[10][30] top.tb_cpu.uut1.registerfile1.regs[10][29] top.tb_cpu.uut1.registerfile1.regs[10][28] top.tb_cpu.uut1.registerfile1.regs[10][27] top.tb_cpu.uut1.registerfile1.regs[10][26] top.tb_cpu.uut1.registerfile1.regs[10][25] top.tb_cpu.uut1.registerfile1.regs[10][24] top.tb_cpu.uut1.registerfile1.regs[10][23] top.tb_cpu.uut1.registerfile1.regs[10][22] top.tb_cpu.uut1.registerfile1.regs[10][21] top.tb_cpu.uut1.registerfile1.regs[10][20] top.tb_cpu.uut1.registerfile1.regs[10][19] top.tb_cpu.uut1.registerfile1.regs[10][18] top.tb_cpu.uut1.registerfile1.regs[10][17] top.tb_cpu.uut1.registerfile1.regs[10][16] top.tb_cpu.uut1.registerfile1.regs[10][15] top.tb_cpu.uut1.registerfile1.regs[10][14] top.tb_cpu.uut1.registerfile1.regs[10][13] top.tb_cpu.uut1.registerfile1.regs[10][12] top.tb_cpu.uut1.registerfile1.regs[10][11] top.tb_cpu.uut1.registerfile1.regs[10][10] top.tb_cpu.uut1.registerfile1.regs[10][9] top.tb_cpu.uut1.registerfile1.regs[10][8] top.tb_cpu.uut1.registerfile1.regs[10][7] top.tb_cpu.uut1.registerfile1.regs[10][6] top.tb_cpu.uut1.registerfile1.regs[10][5] top.tb_cpu.uut1.registerfile1.regs[10][4] top.tb_cpu.uut1.registerfile1.regs[10][3] top.tb_cpu.uut1.registerfile1.regs[10][2] top.tb_cpu.uut1.registerfile1.regs[10][1] top.tb_cpu.uut1.registerfile1.regs[10][0]
+#{top.tb_cpu.uut1.registerfile1.regs[28][31:0]} top.tb_cpu.uut1.registerfile1.regs[28][31] top.tb_cpu.uut1.registerfile1.regs[28][30] top.tb_cpu.uut1.registerfile1.regs[28][29] top.tb_cpu.uut1.registerfile1.regs[28][28] top.tb_cpu.uut1.registerfile1.regs[28][27] top.tb_cpu.uut1.registerfile1.regs[28][26] top.tb_cpu.uut1.registerfile1.regs[28][25] top.tb_cpu.uut1.registerfile1.regs[28][24] top.tb_cpu.uut1.registerfile1.regs[28][23] top.tb_cpu.uut1.registerfile1.regs[28][22] top.tb_cpu.uut1.registerfile1.regs[28][21] top.tb_cpu.uut1.registerfile1.regs[28][20] top.tb_cpu.uut1.registerfile1.regs[28][19] top.tb_cpu.uut1.registerfile1.regs[28][18] top.tb_cpu.uut1.registerfile1.regs[28][17] top.tb_cpu.uut1.registerfile1.regs[28][16] top.tb_cpu.uut1.registerfile1.regs[28][15] top.tb_cpu.uut1.registerfile1.regs[28][14] top.tb_cpu.uut1.registerfile1.regs[28][13] top.tb_cpu.uut1.registerfile1.regs[28][12] top.tb_cpu.uut1.registerfile1.regs[28][11] top.tb_cpu.uut1.registerfile1.regs[28][10] top.tb_cpu.uut1.registerfile1.regs[28][9] top.tb_cpu.uut1.registerfile1.regs[28][8] top.tb_cpu.uut1.registerfile1.regs[28][7] top.tb_cpu.uut1.registerfile1.regs[28][6] top.tb_cpu.uut1.registerfile1.regs[28][5] top.tb_cpu.uut1.registerfile1.regs[28][4] top.tb_cpu.uut1.registerfile1.regs[28][3] top.tb_cpu.uut1.registerfile1.regs[28][2] top.tb_cpu.uut1.registerfile1.regs[28][1] top.tb_cpu.uut1.registerfile1.regs[28][0]
+#{top.tb_cpu.uut1.regw[4:0]} top.tb_cpu.uut1.regw[4] top.tb_cpu.uut1.regw[3] top.tb_cpu.uut1.regw[2] top.tb_cpu.uut1.regw[1] top.tb_cpu.uut1.regw[0]
+#{top.tb_cpu.uut1.registerfile1.addr1[4:0]} top.tb_cpu.uut1.registerfile1.addr1[4] top.tb_cpu.uut1.registerfile1.addr1[3] top.tb_cpu.uut1.registerfile1.addr1[2] top.tb_cpu.uut1.registerfile1.addr1[1] top.tb_cpu.uut1.registerfile1.addr1[0]
+#{top.tb_cpu.uut1.registerfile1.addr2[4:0]} top.tb_cpu.uut1.registerfile1.addr2[4] top.tb_cpu.uut1.registerfile1.addr2[3] top.tb_cpu.uut1.registerfile1.addr2[2] top.tb_cpu.uut1.registerfile1.addr2[1] top.tb_cpu.uut1.registerfile1.addr2[0]
+#{top.tb_cpu.uut1.registerfile1.addrw[4:0]} top.tb_cpu.uut1.registerfile1.addrw[4] top.tb_cpu.uut1.registerfile1.addrw[3] top.tb_cpu.uut1.registerfile1.addrw[2] top.tb_cpu.uut1.registerfile1.addrw[1] top.tb_cpu.uut1.registerfile1.addrw[0]
+#{top.tb_cpu.uut1.rega[31:0]} top.tb_cpu.uut1.rega[31] top.tb_cpu.uut1.rega[30] top.tb_cpu.uut1.rega[29] top.tb_cpu.uut1.rega[28] top.tb_cpu.uut1.rega[27] top.tb_cpu.uut1.rega[26] top.tb_cpu.uut1.rega[25] top.tb_cpu.uut1.rega[24] top.tb_cpu.uut1.rega[23] top.tb_cpu.uut1.rega[22] top.tb_cpu.uut1.rega[21] top.tb_cpu.uut1.rega[20] top.tb_cpu.uut1.rega[19] top.tb_cpu.uut1.rega[18] top.tb_cpu.uut1.rega[17] top.tb_cpu.uut1.rega[16] top.tb_cpu.uut1.rega[15] top.tb_cpu.uut1.rega[14] top.tb_cpu.uut1.rega[13] top.tb_cpu.uut1.rega[12] top.tb_cpu.uut1.rega[11] top.tb_cpu.uut1.rega[10] top.tb_cpu.uut1.rega[9] top.tb_cpu.uut1.rega[8] top.tb_cpu.uut1.rega[7] top.tb_cpu.uut1.rega[6] top.tb_cpu.uut1.rega[5] top.tb_cpu.uut1.rega[4] top.tb_cpu.uut1.rega[3] top.tb_cpu.uut1.rega[2] top.tb_cpu.uut1.rega[1] top.tb_cpu.uut1.rega[0]
+@23
+#{top.tb_cpu.uut1.regb[31:0]} top.tb_cpu.uut1.regb[31] top.tb_cpu.uut1.regb[30] top.tb_cpu.uut1.regb[29] top.tb_cpu.uut1.regb[28] top.tb_cpu.uut1.regb[27] top.tb_cpu.uut1.regb[26] top.tb_cpu.uut1.regb[25] top.tb_cpu.uut1.regb[24] top.tb_cpu.uut1.regb[23] top.tb_cpu.uut1.regb[22] top.tb_cpu.uut1.regb[21] top.tb_cpu.uut1.regb[20] top.tb_cpu.uut1.regb[19] top.tb_cpu.uut1.regb[18] top.tb_cpu.uut1.regb[17] top.tb_cpu.uut1.regb[16] top.tb_cpu.uut1.regb[15] top.tb_cpu.uut1.regb[14] top.tb_cpu.uut1.regb[13] top.tb_cpu.uut1.regb[12] top.tb_cpu.uut1.regb[11] top.tb_cpu.uut1.regb[10] top.tb_cpu.uut1.regb[9] top.tb_cpu.uut1.regb[8] top.tb_cpu.uut1.regb[7] top.tb_cpu.uut1.regb[6] top.tb_cpu.uut1.regb[5] top.tb_cpu.uut1.regb[4] top.tb_cpu.uut1.regb[3] top.tb_cpu.uut1.regb[2] top.tb_cpu.uut1.regb[1] top.tb_cpu.uut1.regb[0]
+@22
+#{top.tb_cpu.uut1.regdata[31:0]} top.tb_cpu.uut1.regdata[31] top.tb_cpu.uut1.regdata[30] top.tb_cpu.uut1.regdata[29] top.tb_cpu.uut1.regdata[28] top.tb_cpu.uut1.regdata[27] top.tb_cpu.uut1.regdata[26] top.tb_cpu.uut1.regdata[25] top.tb_cpu.uut1.regdata[24] top.tb_cpu.uut1.regdata[23] top.tb_cpu.uut1.regdata[22] top.tb_cpu.uut1.regdata[21] top.tb_cpu.uut1.regdata[20] top.tb_cpu.uut1.regdata[19] top.tb_cpu.uut1.regdata[18] top.tb_cpu.uut1.regdata[17] top.tb_cpu.uut1.regdata[16] top.tb_cpu.uut1.regdata[15] top.tb_cpu.uut1.regdata[14] top.tb_cpu.uut1.regdata[13] top.tb_cpu.uut1.regdata[12] top.tb_cpu.uut1.regdata[11] top.tb_cpu.uut1.regdata[10] top.tb_cpu.uut1.regdata[9] top.tb_cpu.uut1.regdata[8] top.tb_cpu.uut1.regdata[7] top.tb_cpu.uut1.regdata[6] top.tb_cpu.uut1.regdata[5] top.tb_cpu.uut1.regdata[4] top.tb_cpu.uut1.regdata[3] top.tb_cpu.uut1.regdata[2] top.tb_cpu.uut1.regdata[1] top.tb_cpu.uut1.regdata[0]
+@200
+-
+----PROGRAM COUNTER---
+@22
+#{top.tb_cpu.uut1.pc[31:0]} top.tb_cpu.uut1.pc[31] top.tb_cpu.uut1.pc[30] top.tb_cpu.uut1.pc[29] top.tb_cpu.uut1.pc[28] top.tb_cpu.uut1.pc[27] top.tb_cpu.uut1.pc[26] top.tb_cpu.uut1.pc[25] top.tb_cpu.uut1.pc[24] top.tb_cpu.uut1.pc[23] top.tb_cpu.uut1.pc[22] top.tb_cpu.uut1.pc[21] top.tb_cpu.uut1.pc[20] top.tb_cpu.uut1.pc[19] top.tb_cpu.uut1.pc[18] top.tb_cpu.uut1.pc[17] top.tb_cpu.uut1.pc[16] top.tb_cpu.uut1.pc[15] top.tb_cpu.uut1.pc[14] top.tb_cpu.uut1.pc[13] top.tb_cpu.uut1.pc[12] top.tb_cpu.uut1.pc[11] top.tb_cpu.uut1.pc[10] top.tb_cpu.uut1.pc[9] top.tb_cpu.uut1.pc[8] top.tb_cpu.uut1.pc[7] top.tb_cpu.uut1.pc[6] top.tb_cpu.uut1.pc[5] top.tb_cpu.uut1.pc[4] top.tb_cpu.uut1.pc[3] top.tb_cpu.uut1.pc[2] top.tb_cpu.uut1.pc[1] top.tb_cpu.uut1.pc[0]
+@c02022
+^1 /tmp/../home/eldewen/test/vhdl/singleCycleMIPS/opcodeLookupTable.txt
+#{top.tb_cpu.uut1.ir[31:0]} top.tb_cpu.uut1.ir[31] top.tb_cpu.uut1.ir[30] top.tb_cpu.uut1.ir[29] top.tb_cpu.uut1.ir[28] top.tb_cpu.uut1.ir[27] top.tb_cpu.uut1.ir[26] top.tb_cpu.uut1.ir[25] top.tb_cpu.uut1.ir[24] top.tb_cpu.uut1.ir[23] top.tb_cpu.uut1.ir[22] top.tb_cpu.uut1.ir[21] top.tb_cpu.uut1.ir[20] top.tb_cpu.uut1.ir[19] top.tb_cpu.uut1.ir[18] top.tb_cpu.uut1.ir[17] top.tb_cpu.uut1.ir[16] top.tb_cpu.uut1.ir[15] top.tb_cpu.uut1.ir[14] top.tb_cpu.uut1.ir[13] top.tb_cpu.uut1.ir[12] top.tb_cpu.uut1.ir[11] top.tb_cpu.uut1.ir[10] top.tb_cpu.uut1.ir[9] top.tb_cpu.uut1.ir[8] top.tb_cpu.uut1.ir[7] top.tb_cpu.uut1.ir[6] top.tb_cpu.uut1.ir[5] top.tb_cpu.uut1.ir[4] top.tb_cpu.uut1.ir[3] top.tb_cpu.uut1.ir[2] top.tb_cpu.uut1.ir[1] top.tb_cpu.uut1.ir[0]
+@28
+top.tb_cpu.uut1.ir[31]
+top.tb_cpu.uut1.ir[30]
+top.tb_cpu.uut1.ir[29]
+top.tb_cpu.uut1.ir[28]
+top.tb_cpu.uut1.ir[27]
+top.tb_cpu.uut1.ir[26]
+top.tb_cpu.uut1.ir[25]
+top.tb_cpu.uut1.ir[24]
+top.tb_cpu.uut1.ir[23]
+top.tb_cpu.uut1.ir[22]
+top.tb_cpu.uut1.ir[21]
+top.tb_cpu.uut1.ir[20]
+top.tb_cpu.uut1.ir[19]
+top.tb_cpu.uut1.ir[18]
+top.tb_cpu.uut1.ir[17]
+top.tb_cpu.uut1.ir[16]
+top.tb_cpu.uut1.ir[15]
+top.tb_cpu.uut1.ir[14]
+top.tb_cpu.uut1.ir[13]
+top.tb_cpu.uut1.ir[12]
+top.tb_cpu.uut1.ir[11]
+top.tb_cpu.uut1.ir[10]
+top.tb_cpu.uut1.ir[9]
+top.tb_cpu.uut1.ir[8]
+top.tb_cpu.uut1.ir[7]
+top.tb_cpu.uut1.ir[6]
+top.tb_cpu.uut1.ir[5]
+top.tb_cpu.uut1.ir[4]
+top.tb_cpu.uut1.ir[3]
+top.tb_cpu.uut1.ir[2]
+top.tb_cpu.uut1.ir[1]
+top.tb_cpu.uut1.ir[0]
+@1401200
+-group_end
+@200
+-
+----ALU---
+@28
+top.tb_cpu.uut1.alusrc
+@22
+#{top.tb_cpu.uut1.sext[31:0]} top.tb_cpu.uut1.sext[31] top.tb_cpu.uut1.sext[30] top.tb_cpu.uut1.sext[29] top.tb_cpu.uut1.sext[28] top.tb_cpu.uut1.sext[27] top.tb_cpu.uut1.sext[26] top.tb_cpu.uut1.sext[25] top.tb_cpu.uut1.sext[24] top.tb_cpu.uut1.sext[23] top.tb_cpu.uut1.sext[22] top.tb_cpu.uut1.sext[21] top.tb_cpu.uut1.sext[20] top.tb_cpu.uut1.sext[19] top.tb_cpu.uut1.sext[18] top.tb_cpu.uut1.sext[17] top.tb_cpu.uut1.sext[16] top.tb_cpu.uut1.sext[15] top.tb_cpu.uut1.sext[14] top.tb_cpu.uut1.sext[13] top.tb_cpu.uut1.sext[12] top.tb_cpu.uut1.sext[11] top.tb_cpu.uut1.sext[10] top.tb_cpu.uut1.sext[9] top.tb_cpu.uut1.sext[8] top.tb_cpu.uut1.sext[7] top.tb_cpu.uut1.sext[6] top.tb_cpu.uut1.sext[5] top.tb_cpu.uut1.sext[4] top.tb_cpu.uut1.sext[3] top.tb_cpu.uut1.sext[2] top.tb_cpu.uut1.sext[1] top.tb_cpu.uut1.sext[0]
+#{top.tb_cpu.uut1.rega[31:0]} top.tb_cpu.uut1.rega[31] top.tb_cpu.uut1.rega[30] top.tb_cpu.uut1.rega[29] top.tb_cpu.uut1.rega[28] top.tb_cpu.uut1.rega[27] top.tb_cpu.uut1.rega[26] top.tb_cpu.uut1.rega[25] top.tb_cpu.uut1.rega[24] top.tb_cpu.uut1.rega[23] top.tb_cpu.uut1.rega[22] top.tb_cpu.uut1.rega[21] top.tb_cpu.uut1.rega[20] top.tb_cpu.uut1.rega[19] top.tb_cpu.uut1.rega[18] top.tb_cpu.uut1.rega[17] top.tb_cpu.uut1.rega[16] top.tb_cpu.uut1.rega[15] top.tb_cpu.uut1.rega[14] top.tb_cpu.uut1.rega[13] top.tb_cpu.uut1.rega[12] top.tb_cpu.uut1.rega[11] top.tb_cpu.uut1.rega[10] top.tb_cpu.uut1.rega[9] top.tb_cpu.uut1.rega[8] top.tb_cpu.uut1.rega[7] top.tb_cpu.uut1.rega[6] top.tb_cpu.uut1.rega[5] top.tb_cpu.uut1.rega[4] top.tb_cpu.uut1.rega[3] top.tb_cpu.uut1.rega[2] top.tb_cpu.uut1.rega[1] top.tb_cpu.uut1.rega[0]
+#{top.tb_cpu.uut1.alub[31:0]} top.tb_cpu.uut1.alub[31] top.tb_cpu.uut1.alub[30] top.tb_cpu.uut1.alub[29] top.tb_cpu.uut1.alub[28] top.tb_cpu.uut1.alub[27] top.tb_cpu.uut1.alub[26] top.tb_cpu.uut1.alub[25] top.tb_cpu.uut1.alub[24] top.tb_cpu.uut1.alub[23] top.tb_cpu.uut1.alub[22] top.tb_cpu.uut1.alub[21] top.tb_cpu.uut1.alub[20] top.tb_cpu.uut1.alub[19] top.tb_cpu.uut1.alub[18] top.tb_cpu.uut1.alub[17] top.tb_cpu.uut1.alub[16] top.tb_cpu.uut1.alub[15] top.tb_cpu.uut1.alub[14] top.tb_cpu.uut1.alub[13] top.tb_cpu.uut1.alub[12] top.tb_cpu.uut1.alub[11] top.tb_cpu.uut1.alub[10] top.tb_cpu.uut1.alub[9] top.tb_cpu.uut1.alub[8] top.tb_cpu.uut1.alub[7] top.tb_cpu.uut1.alub[6] top.tb_cpu.uut1.alub[5] top.tb_cpu.uut1.alub[4] top.tb_cpu.uut1.alub[3] top.tb_cpu.uut1.alub[2] top.tb_cpu.uut1.alub[1] top.tb_cpu.uut1.alub[0]
+#{top.tb_cpu.uut1.aluf[31:0]} top.tb_cpu.uut1.aluf[31] top.tb_cpu.uut1.aluf[30] top.tb_cpu.uut1.aluf[29] top.tb_cpu.uut1.aluf[28] top.tb_cpu.uut1.aluf[27] top.tb_cpu.uut1.aluf[26] top.tb_cpu.uut1.aluf[25] top.tb_cpu.uut1.aluf[24] top.tb_cpu.uut1.aluf[23] top.tb_cpu.uut1.aluf[22] top.tb_cpu.uut1.aluf[21] top.tb_cpu.uut1.aluf[20] top.tb_cpu.uut1.aluf[19] top.tb_cpu.uut1.aluf[18] top.tb_cpu.uut1.aluf[17] top.tb_cpu.uut1.aluf[16] top.tb_cpu.uut1.aluf[15] top.tb_cpu.uut1.aluf[14] top.tb_cpu.uut1.aluf[13] top.tb_cpu.uut1.aluf[12] top.tb_cpu.uut1.aluf[11] top.tb_cpu.uut1.aluf[10] top.tb_cpu.uut1.aluf[9] top.tb_cpu.uut1.aluf[8] top.tb_cpu.uut1.aluf[7] top.tb_cpu.uut1.aluf[6] top.tb_cpu.uut1.aluf[5] top.tb_cpu.uut1.aluf[4] top.tb_cpu.uut1.aluf[3] top.tb_cpu.uut1.aluf[2] top.tb_cpu.uut1.aluf[1] top.tb_cpu.uut1.aluf[0]
+@28
+#{top.tb_cpu.uut1.alucontrol[3:0]} top.tb_cpu.uut1.alucontrol[3] top.tb_cpu.uut1.alucontrol[2] top.tb_cpu.uut1.alucontrol[1] top.tb_cpu.uut1.alucontrol[0]
+@200
+-
+----DATA MEMORY---
+@22
+#{top.tb_cpu.uut1.memdata[31:0]} top.tb_cpu.uut1.memdata[31] top.tb_cpu.uut1.memdata[30] top.tb_cpu.uut1.memdata[29] top.tb_cpu.uut1.memdata[28] top.tb_cpu.uut1.memdata[27] top.tb_cpu.uut1.memdata[26] top.tb_cpu.uut1.memdata[25] top.tb_cpu.uut1.memdata[24] top.tb_cpu.uut1.memdata[23] top.tb_cpu.uut1.memdata[22] top.tb_cpu.uut1.memdata[21] top.tb_cpu.uut1.memdata[20] top.tb_cpu.uut1.memdata[19] top.tb_cpu.uut1.memdata[18] top.tb_cpu.uut1.memdata[17] top.tb_cpu.uut1.memdata[16] top.tb_cpu.uut1.memdata[15] top.tb_cpu.uut1.memdata[14] top.tb_cpu.uut1.memdata[13] top.tb_cpu.uut1.memdata[12] top.tb_cpu.uut1.memdata[11] top.tb_cpu.uut1.memdata[10] top.tb_cpu.uut1.memdata[9] top.tb_cpu.uut1.memdata[8] top.tb_cpu.uut1.memdata[7] top.tb_cpu.uut1.memdata[6] top.tb_cpu.uut1.memdata[5] top.tb_cpu.uut1.memdata[4] top.tb_cpu.uut1.memdata[3] top.tb_cpu.uut1.memdata[2] top.tb_cpu.uut1.memdata[1] top.tb_cpu.uut1.memdata[0]
+[pattern_trace] 1
+[pattern_trace] 0

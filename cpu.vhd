@@ -59,27 +59,17 @@ begin
         MemToReg, ALUSrc, MemWrite, RegWrite,
         ALUControl);
 
-    p1: process (CLK) is
+    muxALUInput1: aluB <= sExt when ALUSrc = '1' else regB;
+    muxRegW1: regW <= ir(15 downto 11) when RegDst = '1' else ir(20 downto 16);
+    muxRegDataInput1: regData <= memData when MemToReg = '1' else aluF;
+    --muxPC1: pc <= brPC when (Branch = '1' and Zero = '1') else incrPC;
+
+    p1: process (CLK) is -- Not sure why PC needs to be clocked like this
     begin
         if rising_edge(CLK) then
-            muxALUInput1: case ALUSrc is
-                when '1' => aluB <= sExt;
-                when others => aluB <= regB;
-            end case;
-
             muxPC: case (Branch AND Zero) is
                 when '1' => pc <= brPC;
                 when others => pc <= incrPC;
-            end case;
-
-            muxRegW1: case RegDst is
-                when '1' => regW <= ir(15 downto 11);
-                when others => regW <= ir(20 downto 16);
-            end case;
-
-            muxRegDataInput1: case MemToReg is
-                when '1' => regData <= memData;
-                when others => regData <= aluF;
             end case;
         end if;
     end process;
