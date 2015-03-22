@@ -15,8 +15,8 @@ entity MEM_1K is
 end entity;
 
 architecture impl1 of MEM_1K is
-    type WORD_ARR is array(natural range <>) of std_logic_vector(7 downto 0);
-    signal mem: WORD_ARR(1023 downto 0) := (others => (others => '0'));
+    type BYTE_ARR is array(natural range <>) of std_logic_vector(7 downto 0);
+    signal mem: BYTE_ARR(1023 downto 0) := (others => (others => '0'));
 begin
     -- Add some "initial words" to the memory
     mem( 0) <= x"01";
@@ -26,10 +26,10 @@ begin
     mem(16) <= x"05";
     mem(64) <= x"40";
 
-    p1: process
+    p1: process (CLK) is
         variable i: natural;
     begin
-        i := conv_integer(ADDR);
+        i := conv_integer(unsigned(ADDR));
         if rising_edge(CLK) then
             if WR = '1' then
                 mem(i+3) <= DATAW(31 downto 24);

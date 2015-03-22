@@ -67,4 +67,16 @@ package COMPONENTS is
             ALUControl: out std_logic_vector (3 downto 0)
         );
     end component;
+
+    component CPU_SINGLECYCLE is
+        port (
+            CLK:  in  std_logic;
+            dRegA, dAluB, dRegB, dAluF, dSExt, dSExtShft,
+                dPC, dIR, dBrPC, dIncrPC, dMemData, dRegData
+                : out std_logic_vector(31 downto 0);
+            dRegWrite, dALUSrc, dMemWrite, dMemRead, dMemToReg,
+                dBranch, dZero, dRegDst : out std_logic;
+            dALUControl : out std_logic_vector(3 downto 0)
+        );
+    end component;
 end package;

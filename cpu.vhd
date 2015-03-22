@@ -9,13 +9,13 @@ entity CPU_SINGLECYCLE is
         CLK:  in  std_logic;
 
         -- Debug ports
-        dRegWrite, dALUSrc, dMemWrite, dMemRead, dMemToReg,
-            dBranch, dZero, dRegDst : out std_logic;
-        dALUControl : out std_logic_vector(3 downto 0);
-
         dRegA, dAluB, dRegB, dAluF, dSExt, dSExtShft,
             dPC, dIR, dBrPC, dIncrPC, dMemData, dRegData
-            : out std_logic_vector(31 downto 0)
+            : out std_logic_vector(31 downto 0);
+
+        dRegWrite, dALUSrc, dMemWrite, dMemRead, dMemToReg,
+            dBranch, dZero, dRegDst : out std_logic;
+        dALUControl : out std_logic_vector(3 downto 0)
     );
 end entity;
 
@@ -31,7 +31,7 @@ architecture impl1 of CPU_SINGLECYCLE is
     signal regA, aluB, regB, aluF : std_logic_vector(31 downto 0);
     signal sExt, sExtShft : std_logic_vector(31 downto 0);
     signal regW : std_logic_vector(4 downto 0);
-    signal pc, ir : std_logic_vector(31 downto 0); -- Special registers
+    signal pc, ir : std_logic_vector(31 downto 0) := (others=>'0');
     signal brPC, incrPC : std_logic_vector(31 downto 0);
     signal memData, regData : std_logic_vector(31 downto 0);
     -- Note: PC is 32-bits, but the memory/memaddr is only 10 bits (1024-word)
@@ -107,4 +107,58 @@ begin
     dIncrPC <= incrPC;
     dMemData <= memData;
     dRegData <= regData;
+end architecture;
+
+----------------------------------------------------------------------
+
+library ieee;
+use ieee.std_logic_1164.all;
+use std.textio.all;
+use work.components.all;
+
+entity TB_CPU is end;
+
+architecture impl1 of TB_CPU is
+    -- Datapath debug signals
+    signal dRegA, dAluB, dRegB, dAluF, dSExt, dSExtShft, dPC, dIR, dBrPC,
+        dIncrPC, dMemData, dRegData : std_logic_vector(31 downto 0);
+    -- Control debug signals
+    signal dRegWrite, dALUSrc, dMemWrite, dMemRead, dMemToReg,
+        dBranch, dZero, dRegDst : std_logic;
+    signal dALUControl : std_logic_vector(3 downto 0);
+
+    signal sClk: std_logic := '0';
+begin
+    uut1: CPU_SINGLECYCLE port map (
+        sClk,
+
+        dRegA, dAluB, dRegB, dAluF, dSExt, dSExtShft, dPC, dIR, dBrPC,
+        dIncrPC, dMemData, dRegData,
+
+        dRegWrite, dALUSrc, dMemWrite, dMemRead, dMemToReg, dBranch, dZero, 
+        dRegDst, dALUControl
+    );
+
+    clk1: process is
+    begin
+        sClk <= not sClk;
+        wait for T/2;
+    end process;
+
+--    signalTests1: process
+--        variable buf: line;
+--    begin
+--        -- Stagger assertions wrt the clock to ensure edge-clocked behavior
+--        wait for T/4;
+--
+--        --sA <= x"00000002";
+--        --sB <= x"00000003";
+--        --sControl <= "0010"; -- Addition
+--        --wait for T/2;
+--        --assert (sF /= x"00000005");
+--        --wait for T/2;
+--        --assert (sF = x"00000005");
+--
+--        wait;
+--    end process;
 end architecture;

@@ -16,9 +16,10 @@ VHD_OBJ = components.o \
 ASM = program.s
 PROGOBJ = program.o
 
-TB = tb_cpu_ir_decoder
+# TB = tb_mem_ro_1k
+TB = tb_cpu
 IMPL = impl1
-SIMDUR = 50ms
+SIMDUR = 1ms
 
 all: $(VHD_OBJ)
 	ghdl -e --ieee=mentor $(TB) $(IMPL)
@@ -27,7 +28,7 @@ all: $(VHD_OBJ)
 	ghdl -a --ieee=mentor $<
 
 ex:
-	./$(TB)-$(IMPL) --vcd=$(TB)-$(IMPL).vcd --stop-time=$(SIMDUR)
+	./$(TB)-$(IMPL) --wave=$(TB)-$(IMPL).ghw --stop-time=$(SIMDUR)
 
 # Current instructions:
 # Run `make prog` and copy-paste the contents into mem1k_RO.vhd (the program 
@@ -41,4 +42,4 @@ prog:
 	    's/\s*(\d+)\s+\w+:\s+([\da-f]+)\s+(.*)/mem(\1) <= x"\2"; -- \3/'
 
 clean:
-	rm -f *.cf tb_* *.vcd *.o
+	rm -f *.cf tb_* *.ghw *.vcd *.o

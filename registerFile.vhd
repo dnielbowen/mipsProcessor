@@ -18,17 +18,17 @@ end entity;
 
 architecture impl1 of REGISTER_ARRAY_32_32 is
     type REG_ARRAY is array(natural range <>) of std_logic_vector(31 downto 0);
-    signal regs: REG_ARRAY(31 downto 0);
+    signal regs: REG_ARRAY(31 downto 0) := (others => (others => '0'));
 begin
-    p1: process
+    p1: process (CLK) is
     begin
         if rising_edge(CLK) then
             if ENW = '1' then
-                regs(conv_integer(ADDRW)) <= DATA;
+                regs(conv_integer(unsigned(ADDRW))) <= DATA;
             end if;
 
-            REG1 <= regs(conv_integer(ADDR1));
-            REG2 <= regs(conv_integer(ADDR2));
+            REG1 <= regs(conv_integer(unsigned(ADDR1)));
+            REG2 <= regs(conv_integer(unsigned(ADDR2)));
         end if;
     end process;
 end;
