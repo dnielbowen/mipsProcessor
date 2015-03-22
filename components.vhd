@@ -5,6 +5,7 @@ use std.textio.all;
 
 package COMPONENTS is
     constant g_delay: TIME := 1 ns;
+    constant T: time := 200 ns; -- Testbench period
 
     component MEM_RO_1K is
         port (
@@ -59,7 +60,6 @@ package COMPONENTS is
 
     component CPU_IR_DECODER is
         port (
-            CLK: in  std_logic;
             IR:  in  std_logic_vector(31 downto 0);
 
             RegDst, Branch, MemRead, MemToReg: out std_logic;

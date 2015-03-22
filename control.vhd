@@ -2,9 +2,18 @@ library ieee;
 use ieee.std_logic_1164.all;
 
 -- Decodes instruction register to provide CPU control signals
+-- Below are some sample opcodes
+--   8f210200        lw      at,512(t9)
+--   1001ffff        beq     zero,at,8 <main+0x8>
+--   af210204        sw      at,516(t9)
+--   00000000        nop
+--   00430820        add     at,v0,v1
+--   00430822        sub     at,v0,v1
+--   00430824        and     at,v0,v1
+--   00430825        or      at,v0,v1
+--   0043082a        slt     at,v0,v1
 entity CPU_IR_DECODER is
     port (
-        CLK: in  std_logic;
         IR:  in  std_logic_vector(31 downto 0);
 
         RegDst, Branch, MemRead, MemToReg: out std_logic;
@@ -49,4 +58,71 @@ begin
     ALUSrc <= cSigs.ALUSrc;
     MemWrite <= cSigs.MemWrite;
     RegWrite <= cSigs.RegWrite;
+end architecture;
+
+----------------------------------------------------------------------
+
+library ieee;
+use ieee.std_logic_1164.all;
+use std.textio.all;
+use work.components.all;
+
+entity TB_CPU_IR_DECODER is end;
+
+architecture impl1 of TB_CPU_IR_DECODER  is
+    signal sRegWrite, sALUSrc, sMemWrite, sMemRead, sMemToReg : std_logic;
+    signal sBranch, sZero, sRegDst : std_logic;
+    signal sALUControl : std_logic_vector(3 downto 0);
+
+    signal sIR: std_logic_vector(31 downto 0);
+begin
+    uut1: CPU_IR_DECODER port map (
+        sIR, sRegDst, sBranch, sMemRead, sMemToReg,
+        sALUSrc, sMemWrite, sRegWrite, sALUControl
+    );
+
+    signalTests1: process
+        variable buf: line;
+    begin
+        -- Stagger assertions wrt the clock to ensure edge-clocked behavior
+        wait for T/4;
+
+        sIR <= x"00430820"; -- add t1,$2,$3
+        wait for T/2;
+        assert(sRegDst = '1');
+        assert(sALUSrc = '0');
+        assert(sMemToReg = '0');
+        assert(sRegWrite = '1');
+        assert(sMemRead = '0');
+        assert(sMemWrite = '0');
+        assert(sBranch = '0');
+        assert(sALUControl = "0010");
+
+        sIR <= x"8f210200"; -- lw $t1,0x200($t9)
+        wait for T/2;
+        assert(sRegDst = '0');
+        assert(sALUSrc = '1');
+        assert(sMemToReg = '1');
+        assert(sRegWrite = '1');
+        assert(sMemRead = '1');
+        assert(sMemWrite = '0');
+        assert(sBranch = '0');
+        assert(sALUControl = "0010");
+
+        sIR <= x"0043082a"; -- slt $1,$2,$3
+        wait for T/2;
+        assert(sRegDst = '1');
+        assert(sALUSrc = '0');
+        assert(sMemToReg = '0');
+        assert(sRegWrite = '1');
+        assert(sMemRead = '0');
+        assert(sMemWrite = '0');
+        assert(sBranch = '0');
+        assert(sALUControl = "0111");
+
+        write(buf, string'("Assertions tb_control complete"));
+        writeline(output, buf);
+
+        wait;
+    end process;
 end architecture;

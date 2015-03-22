@@ -24,7 +24,7 @@ architecture impl1 of CPU_SINGLECYCLE is
     signal RegWrite, ALUSrc, MemWrite, MemRead, MemToReg : std_logic;
     signal Branch, Zero, RegDst : std_logic;
     signal ALUControl : std_logic_vector(3 downto 0);
-    
+
     constant CFour : std_logic_vector(31 downto 0) := x"00000004";
 
     -- Datapath signals (lowercase)
@@ -55,7 +55,7 @@ begin
         CLK => CLK
     );
     controlSignals1: CPU_IR_DECODER port map(
-        CLK, ir, RegDst, Branch, MemRead,
+        ir, RegDst, Branch, MemRead,
         MemToReg, ALUSrc, MemWrite, RegWrite,
         ALUControl);
 

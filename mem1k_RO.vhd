@@ -16,12 +16,12 @@ architecture impl1 of MEM_RO_1K is
     signal mem: WORD_ARR := (others => (others => '0'));
 begin
     -- Enter the program (opcodes) here
-    mem(  0) <= x"00000010";
-    mem(  1) <= x"00000010";
-    mem(  2) <= x"00000010";
-    mem(  3) <= x"00000010";
-    mem(  4) <= x"00000010";
-    mem(  5) <= x"00000010";
+    mem( 0) <= x"8c1c0000"; -- lw    gp,0(zero)
+    mem( 4) <= x"8f890004"; -- lw    t1,4(gp)
+    mem( 8) <= x"8f8a0040"; -- lw    t2,64(gp)
+    mem(12) <= x"012a5820"; -- add   t3,t1,t2
+    mem(16) <= x"af8b0044"; -- sw    t3,68(gp)
+    mem(20) <= x"1000ffff"; -- b     14 <here>
 
     p1: process
     begin

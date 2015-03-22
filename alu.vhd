@@ -27,7 +27,7 @@ begin
                 when x"C" => F <= A NOR B;
                 when x"2" => F <= std_logic_vector(unsigned(A) + unsigned(B));
                 when x"6" => F <= std_logic_vector(unsigned(A) - unsigned(B));
-                when x"7" => F <= (1 => aLessThanB, others => '0');
+                when x"7" => F <= (0 => aLessThanB, others => '0');
                 when others => F <= (others => '0');
             end case;
         end if;
@@ -53,19 +53,46 @@ begin
     clk1: process is
     begin
         sClk <= not sClk;
-        wait for 100 ns;
+        wait for T/2;
     end process;
 
     signalTests1: process
         variable buf: line;
     begin
+        -- Stagger assertions wrt the clock to ensure edge-clocked behavior
+        wait for T/4;
+
         sA <= x"00000002";
         sB <= x"00000003";
         sControl <= "0010"; -- Addition
-        wait for 30 ns;
+        wait for T/2;
         assert (sF /= x"00000005");
-        wait for 100 ns;
+        wait for T/2;
         assert (sF = x"00000005");
+
+        sA <= x"00000002";
+        sB <= x"00000003";
+        sControl <= "0110"; -- Subtraction
+        wait for T/2;
+        assert (sF /= x"FFFFFFFF");
+        wait for T/2;
+        assert (sF = x"FFFFFFFF");
+
+        sA <= x"00000002";
+        sB <= x"00000003";
+        sControl <= "0111"; -- SLT
+        wait for T/2;
+        assert (sF /= x"00000001");
+        wait for T/2;
+        assert (sF = x"00000001");
+
+        sA <= x"00000003";
+        sB <= x"00000003";
+        sControl <= "0111"; -- SLT
+        wait for T/2;
+        assert (sF /= x"00000000");
+        wait for T/2;
+        assert (sF = x"00000000");
 
         write(buf, string'("Assertions tb_alu complete"));
         writeline(output, buf);
