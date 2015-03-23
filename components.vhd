@@ -59,24 +59,26 @@ package COMPONENTS is
     end component;
 
     component CPU_IR_DECODER is
-        port (
-            IR:  in  std_logic_vector(31 downto 0);
+    port (
+        IR:  in  std_logic_vector(31 downto 0);
 
-            RegDst, Branch, MemRead, MemToReg: out std_logic;
-            ALUSrc, MemWrite, RegWrite : out std_logic;
-            ALUControl: out std_logic_vector (3 downto 0)
-        );
+        -- RegDst is essentially a question of whether the instruction is 
+        -- I-type or R-type (ie "where in the instruction is rd?")
+        RegDst, Branch, MemRead, MemWrite, RegWrite : out std_logic;
+        ALUSrc, RegWSrc: out std_logic_vector (1 downto 0);
+        ALUControl: out std_logic_vector (3 downto 0)
+    );
     end component;
 
     component CPU_SINGLECYCLE is
-        port (
-            CLK:  in  std_logic;
-            dRegA, dAluB, dRegB, dAluF, dSExt, dSExtShft,
-                dPC, dIR, dBrPC, dIncrPC, dMemData, dRegData
-                : out std_logic_vector(31 downto 0);
-            dRegWrite, dALUSrc, dMemWrite, dMemRead, dMemToReg,
-                dBranch, dZero, dRegDst : out std_logic;
-            dALUControl : out std_logic_vector(3 downto 0)
-        );
+    port (
+        CLK:  in  std_logic;
+        dRegA, dAluB, dRegB, dAluF, dSExt, dSExtShft,
+            dPC, dIR, dBrPC, dIncrPC, dMemData, dRegData
+            : out std_logic_vector(31 downto 0);
+        dRegWrite, dMemWrite, dMemRead, dBranch, dZero, dRegDst: out std_logic;
+        dALUControl: out std_logic_vector(3 downto 0);
+        dRegWSrc, dALUSrc: out std_logic_vector(1 downto 0)
+    );
     end component;
 end package;

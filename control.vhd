@@ -16,17 +16,18 @@ entity CPU_IR_DECODER is
     port (
         IR:  in  std_logic_vector(31 downto 0);
 
-        RegDst, Branch, MemRead, MemToReg: out std_logic;
-        ALUSrc, MemWrite, RegWrite : out std_logic;
+        -- RegDst is essentially a question of whether the instruction is 
+        -- I-type or R-type (ie "where in the instruction is rd?")
+        RegDst, Branch, MemRead, MemWrite, RegWrite : out std_logic;
+        ALUSrc, RegWSrc: out std_logic_vector (1 downto 0);
         ALUControl: out std_logic_vector (3 downto 0)
     );
 end entity;
 
 architecture impl1 of CPU_IR_DECODER is
     type CONTROL_SIGS is record
-        RegDst, ALUSrc, MemToReg, RegWrite: std_logic;
-        MemRead, MemWrite, Branch: std_logic;
-        ALUOp: std_logic_vector(1 downto 0);
+        RegDst, RegWrite, MemRead, MemWrite, Branch: std_logic;
+        ALUSrc, RegWSrc, ALUOp: std_logic_vector(1 downto 0);
     end record;
     signal cSigs : CONTROL_SIGS;
     
@@ -36,14 +37,23 @@ begin
     opcode <= ir(31 downto 26);
     fcn <= ir(5 downto 0);
 
-    cSigs <= ('1','0','0','1','0','0','0',"10") when opcode = "000000"  -- Rfmt
-        else ('0','1','1','1','1','0','0',"00") when opcode = "100011"  -- LW
-        else ('0','1','0','0','0','1','0',"00") when opcode = "101011"  -- SW
-        else ('0','0','0','0','0','0','1',"01") when opcode = "000100"; -- BEQ
+    cSigs <= ('1','1','0','0','0',"00","00","10")
+            when opcode = "000000"  -- R-type instruction
+        else ('0','1','1','0','0',"01","01","00")
+            when opcode = "100011"  -- lw
+        else ('0','0','0','1','0',"01","00","00")
+            when opcode = "101011"  -- sw
+        else ('0','1','0','0','0',"00","10","00")
+            when opcode = "001111"  -- lui
+        else ('0','1','0','0','0',"10","00","11")
+            when opcode = "001101"  -- ori
+        else ('0','0','0','0','1',"00","00","01")
+            when opcode = "000100"; -- beq
 
     ALUControl <=
-             "0010" when cSigs.ALUOp = "00" --add (LW,SW)
-        else "0110" when cSigs.ALUOp = "01" --sub (BEQ)
+             "0010" when cSigs.ALUOp = "00" -- add (LW,SW)
+        else "0110" when cSigs.ALUOp = "01" -- sub (BEQ)
+        else "0001" when cSigs.ALUOp = "11" -- OR (ori)
 
         else "0010" when cSigs.ALUOp = "10" and fcn = "100000" -- add (ADD)
         else "0110" when cSigs.ALUOp = "10" and fcn = "100010" -- sub (SUB)
@@ -54,7 +64,7 @@ begin
     RegDst <= cSigs.RegDst;
     Branch <= cSigs.Branch;
     MemRead <= cSigs.MemRead;
-    MemToReg <= cSigs.MemToReg;
+    RegWSrc <= cSigs.RegWSrc;
     ALUSrc <= cSigs.ALUSrc;
     MemWrite <= cSigs.MemWrite;
     RegWrite <= cSigs.RegWrite;
@@ -70,15 +80,15 @@ use work.components.all;
 entity TB_CPU_IR_DECODER is end;
 
 architecture impl1 of TB_CPU_IR_DECODER  is
-    signal sRegWrite, sALUSrc, sMemWrite, sMemRead, sMemToReg : std_logic;
-    signal sBranch, sZero, sRegDst : std_logic;
+    signal sRegWrite, sMemWrite, sMemRead, sBranch, sZero, sRegDst : std_logic;
     signal sALUControl : std_logic_vector(3 downto 0);
+    signal sRegWSrc, sALUSrc : std_logic_vector(1 downto 0);
 
     signal sIR: std_logic_vector(31 downto 0);
 begin
     uut1: CPU_IR_DECODER port map (
-        sIR, sRegDst, sBranch, sMemRead, sMemToReg,
-        sALUSrc, sMemWrite, sRegWrite, sALUControl
+        sIR, sRegDst, sBranch, sMemRead, sMemWrite,
+        sRegWrite, sALUSrc, sRegWSrc, sALUControl
     );
 
     signalTests1: process
@@ -90,8 +100,8 @@ begin
         sIR <= x"00430820"; -- add t1,$2,$3
         wait for T/2;
         assert(sRegDst = '1');
-        assert(sALUSrc = '0');
-        assert(sMemToReg = '0');
+        assert(sALUSrc = "00");
+        assert(sRegWSrc = "00");
         assert(sRegWrite = '1');
         assert(sMemRead = '0');
         assert(sMemWrite = '0');
@@ -101,8 +111,8 @@ begin
         sIR <= x"8f210200"; -- lw $t1,0x200($t9)
         wait for T/2;
         assert(sRegDst = '0');
-        assert(sALUSrc = '1');
-        assert(sMemToReg = '1');
+        assert(sALUSrc = "01");
+        assert(sRegWSrc = "01");
         assert(sRegWrite = '1');
         assert(sMemRead = '1');
         assert(sMemWrite = '0');
@@ -112,8 +122,8 @@ begin
         sIR <= x"0043082a"; -- slt $1,$2,$3
         wait for T/2;
         assert(sRegDst = '1');
-        assert(sALUSrc = '0');
-        assert(sMemToReg = '0');
+        assert(sALUSrc = "00");
+        assert(sRegWSrc = "00");
         assert(sRegWrite = '1');
         assert(sMemRead = '0');
         assert(sMemWrite = '0');

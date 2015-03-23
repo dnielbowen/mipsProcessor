@@ -13,17 +13,17 @@ entity CPU_SINGLECYCLE is
             dPC, dIR, dBrPC, dIncrPC, dMemData, dRegData
             : out std_logic_vector(31 downto 0);
 
-        dRegWrite, dALUSrc, dMemWrite, dMemRead, dMemToReg,
-            dBranch, dZero, dRegDst : out std_logic;
-        dALUControl : out std_logic_vector(3 downto 0)
+        dRegWrite, dMemWrite, dMemRead, dBranch, dZero, dRegDst: out std_logic;
+        dALUControl: out std_logic_vector(3 downto 0);
+        dRegWSrc, dALUSrc: out std_logic_vector(1 downto 0)
     );
 end entity;
 
 architecture impl1 of CPU_SINGLECYCLE is
     -- Control signals (uppercase)
-    signal RegWrite, ALUSrc, MemWrite, MemRead, MemToReg : std_logic;
-    signal Branch, Zero, RegDst : std_logic;
+    signal RegWrite, MemWrite, MemRead, Branch, Zero, RegDst : std_logic;
     signal ALUControl : std_logic_vector(3 downto 0);
+    signal ALUSrc, RegWSrc : std_logic_vector (1 downto 0);
 
     constant CFour : std_logic_vector(31 downto 0) := x"00000004";
 
@@ -56,15 +56,16 @@ begin
     );
     controlSignals1: CPU_IR_DECODER port map(
         ir, RegDst, Branch, MemRead,
-        MemToReg, ALUSrc, MemWrite, RegWrite,
-        ALUControl);
+        MemWrite, RegWrite, ALUSrc, RegWSrc, ALUControl);
 
-    muxALUInput1: aluB <= sExt when ALUSrc = '1' else regB;
-    muxRegW1: regW <= ir(15 downto 11) when RegDst = '1' else ir(20 downto 16);
-    muxRegDataInput1: regData <= memData when MemToReg = '1' else aluF;
-    --muxPC1: pc <= brPC when (Branch = '1' and Zero = '1') else incrPC;
+    muxALUInputB: aluB <= sExt when ALUSrc = "01"
+        else regB when ALUSrc = "00" else x"0000" & ir(15 downto 0);
+    muxInputDataToRegister: regData <= memData when RegWSrc = "01"
+        else aluF when RegWSrc = "00" else ir(15 downto 0) & x"0000";
+    muxSelectIOrJInstructionType: regW <=
+        ir(15 downto 11) when RegDst = '1' else ir(20 downto 16);
 
-    p1: process (CLK) is -- Not sure why PC needs to be clocked like this
+    p1: process (CLK) is -- Apparently only the PC needs to be clocked?
     begin
         if rising_edge(CLK) then
             muxPC: case (Branch AND Zero) is
@@ -79,7 +80,7 @@ begin
     dALUSrc <= ALUSrc;
     dMemWrite <= MemWrite;
     dMemRead <= MemRead;
-    dMemToReg <= MemToReg;
+    dRegWSrc <= RegWSrc;
     dBranch <= Branch;
     dZero <= Zero;
     dRegDst <= RegDst;
@@ -113,9 +114,9 @@ architecture impl1 of TB_CPU is
     signal dRegA, dAluB, dRegB, dAluF, dSExt, dSExtShft, dPC, dIR, dBrPC,
         dIncrPC, dMemData, dRegData : std_logic_vector(31 downto 0);
     -- Control debug signals
-    signal dRegWrite, dALUSrc, dMemWrite, dMemRead, dMemToReg,
-        dBranch, dZero, dRegDst : std_logic;
+    signal dRegWrite, dMemWrite, dMemRead, dBranch, dZero, dRegDst : std_logic;
     signal dALUControl : std_logic_vector(3 downto 0);
+    signal dRegWSrc, dALUSrc : std_logic_vector(1 downto 0);
 
     signal sClk: std_logic := '0';
 begin
@@ -125,8 +126,8 @@ begin
         dRegA, dAluB, dRegB, dAluF, dSExt, dSExtShft, dPC, dIR, dBrPC,
         dIncrPC, dMemData, dRegData,
 
-        dRegWrite, dALUSrc, dMemWrite, dMemRead, dMemToReg, dBranch, dZero, 
-        dRegDst, dALUControl
+        dRegWrite, dMemWrite, dMemRead, dBranch, dZero, dRegDst, dALUControl, 
+        dRegWSrc, dALUSrc
     );
 
     clk1: process is

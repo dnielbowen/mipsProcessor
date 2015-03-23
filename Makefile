@@ -13,13 +13,13 @@ VHD_OBJ = components.o \
           control.o \
           atb_cpu.o
 
-ASM = program.s
-PROGOBJ = program.o
+ASM = addImmediates.s
+PROGOBJ = obj.o
 
 # TB = tb_registers
 # TB = tb_mem_ro_1k
-TB = tb_cpu
 # TB = tb_mem1k
+TB = tb_cpu
 IMPL = impl1
 SIMDUR = 1ms
 
