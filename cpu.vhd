@@ -29,7 +29,7 @@ architecture impl1 of CPU_SINGLECYCLE is
 
     -- Datapath signals (lowercase)
     signal regA, aluB, regB, aluF : std_logic_vector(31 downto 0);
-    signal sExt, sExtShft : std_logic_vector(31 downto 0);
+    signal sExtImm, sExtShft : std_logic_vector(31 downto 0);
     signal regW : std_logic_vector(4 downto 0);
     signal pc, ir : std_logic_vector(31 downto 0) := (others=>'0');
     signal brPC, incrPC : std_logic_vector(31 downto 0);
@@ -37,13 +37,13 @@ architecture impl1 of CPU_SINGLECYCLE is
     -- Note: PC is 32-bits, but the memory/memaddr is only 10 bits (1024-word)
 begin
     zeroDetect1: Zero <= '1' when (aluF = x"00000000") else '0';
-    shiftMemAddrLeft: sExtShft <= sExt(29 downto 0) & "00";
+    shiftMemAddrLeft: sExtShft <= sExtImm(29 downto 0) & "00";
     alu1: ALU port map (regA, aluB, CLK, ALUControl, aluF);
     memData1: MEM_1K port map (CLK, aluF(9 downto 0), MemWrite, regB, memData);
     memInstr1: MEM_RO_1K port map (CLK, pc(9 downto 0), ir);
     progCounter1: ADDER_32 port map (pc, CFour, incrPC);
     memAddrAdder1: ADDER_32 port map (incrPC, sExtShft, brPC);
-    signExtend1: SIGNEXTEND_16_32 port map (ir(15 downto 0), sExt);
+    signExtend1: SIGNEXTEND_16_32 port map (ir(15 downto 0), sExtImm);
     registerFile1: REGISTER_ARRAY_32_32 port map (
         ADDR1 => ir(25 downto 21),
         ADDR2 => ir(20 downto 16),
@@ -58,14 +58,14 @@ begin
         ir, RegDst, Branch, MemRead,
         MemWrite, RegWrite, ALUSrc, RegWSrc, ALUControl);
 
-    muxALUInputB: aluB <= sExt when ALUSrc = "01"
+    muxALUInputB: aluB <= sExtImm when ALUSrc = "01"
         else regB when ALUSrc = "00" else x"0000" & ir(15 downto 0);
     muxInputDataToRegister: regData <= memData when RegWSrc = "01"
         else aluF when RegWSrc = "00" else ir(15 downto 0) & x"0000";
     muxSelectIOrJInstructionType: regW <=
         ir(15 downto 11) when RegDst = '1' else ir(20 downto 16);
 
-    p1: process (CLK) is -- Apparently only the PC needs to be clocked?
+    p1: process (CLK) is -- Apparently only the PC MUX needs to be clocked?
     begin
         if rising_edge(CLK) then
             muxPC: case (Branch AND Zero) is
@@ -90,7 +90,7 @@ begin
     dAluB <= aluB;
     dRegB <= regB;
     dAluF <= aluF;
-    dSExt <= sExt;
+    dSExt <= sExtImm;
     dSExtShft <= sExtShft;
     dPC <= pc;
     dIR <= ir;

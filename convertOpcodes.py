@@ -1,6 +1,10 @@
 import sys
 import re
 
+# 3/22/15 7:56pm
+# Converts opcodes from the text format objdump disassembles them into (passed 
+# to this script via stdin) to a format able to be copy-pasted into VHDL to 
+# initialize the instruction memory.
 n = 0
 for l in sys.stdin.readlines():
     m = re.findall("\s+\w+:\s+((\w\w)(\w\w)(\w\w)(\w\w))\s+(.*)",

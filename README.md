@@ -1,3 +1,7 @@
+This is a single cycle CPU implementing a subset of the MIPS instructions. It 
+is primarily modeled after Figure 4.17 in Hennessy and Patterson's 
+Hardware/Software interface textbook (4e).
+
 # Extra MUXs
 
 MUX sources to the register write:
@@ -32,6 +36,8 @@ Additions
 Opcode  function    mnemonic
 001101              ori         I
 001111              lui         I
+001000              addi        I
+001001              addiu       I
 
             ORI LUI
 Branch      0   0

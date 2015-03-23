@@ -13,7 +13,7 @@ VHD_OBJ = components.o \
           control.o \
           atb_cpu.o
 
-ASM = addImmediates.s
+ASM = fibonacci.s
 PROGOBJ = obj.o
 
 # TB = tb_registers
@@ -21,7 +21,7 @@ PROGOBJ = obj.o
 # TB = tb_mem1k
 TB = tb_cpu
 IMPL = impl1
-SIMDUR = 1ms
+SIMDUR = 200us
 
 all: $(VHD_OBJ)
 	ghdl -e --ieee=mentor $(TB) $(IMPL)

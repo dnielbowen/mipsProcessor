@@ -23,6 +23,7 @@ begin
          A NOR B when CONTROL = x"C" else
          std_logic_vector(unsigned(A) + unsigned(B)) when CONTROL = x"2" else
          std_logic_vector(unsigned(A) - unsigned(B)) when CONTROL = x"6" else
+         std_logic_vector(signed(A) + signed(B)) when CONTROL = x"9" else
          (0 => aLessThanB, others => '0') when CONTROL = x"7" else
          (others => '0');
 

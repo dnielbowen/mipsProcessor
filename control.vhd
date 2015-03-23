@@ -27,7 +27,8 @@ end entity;
 architecture impl1 of CPU_IR_DECODER is
     type CONTROL_SIGS is record
         RegDst, RegWrite, MemRead, MemWrite, Branch: std_logic;
-        ALUSrc, RegWSrc, ALUOp: std_logic_vector(1 downto 0);
+        ALUSrc, RegWSrc: std_logic_vector(1 downto 0);
+        ALUOp: std_logic_vector(2 downto 0);
     end record;
     signal cSigs : CONTROL_SIGS;
     
@@ -37,29 +38,34 @@ begin
     opcode <= ir(31 downto 26);
     fcn <= ir(5 downto 0);
 
-    cSigs <= ('1','1','0','0','0',"00","00","10")
+    cSigs <= ('1','1','0','0','0',"00","00","010")
             when opcode = "000000"  -- R-type instruction
-        else ('0','1','1','0','0',"01","01","00")
+        else ('0','1','1','0','0',"01","01","000")
             when opcode = "100011"  -- lw
-        else ('0','0','0','1','0',"01","00","00")
+        else ('0','0','0','1','0',"01","00","000")
             when opcode = "101011"  -- sw
-        else ('0','1','0','0','0',"00","10","00")
+        else ('0','1','0','0','0',"00","10","000")
             when opcode = "001111"  -- lui
-        else ('0','1','0','0','0',"10","00","11")
+        else ('0','1','0','0','0',"10","00","011")
             when opcode = "001101"  -- ori
-        else ('0','0','0','0','1',"00","00","01")
+        else ('0','1','0','0','0',"10","00","000")
+            when opcode = "001001"  -- addiu
+        else ('0','1','0','0','0',"01","00","100")
+            when opcode = "001000"  -- addi
+        else ('0','0','0','0','1',"00","00","001")
             when opcode = "000100"; -- beq
 
     ALUControl <=
-             "0010" when cSigs.ALUOp = "00" -- add (LW,SW)
-        else "0110" when cSigs.ALUOp = "01" -- sub (BEQ)
-        else "0001" when cSigs.ALUOp = "11" -- OR (ori)
+             "0010" when cSigs.ALUOp = "000" -- addu (LW,SW,ADDIU)
+        else "0110" when cSigs.ALUOp = "001" -- subu (BEQ)
+        else "0001" when cSigs.ALUOp = "011" -- OR (ORI)
+        else "1001" when cSigs.ALUOp = "100" -- signed add (addi)
 
-        else "0010" when cSigs.ALUOp = "10" and fcn = "100000" -- add (ADD)
-        else "0110" when cSigs.ALUOp = "10" and fcn = "100010" -- sub (SUB)
-        else "0000" when cSigs.ALUOp = "10" and fcn = "100100" -- AND
-        else "0001" when cSigs.ALUOp = "10" and fcn = "100101" -- OR
-        else "0111" when cSigs.ALUOp = "10" and fcn = "101010";-- SLT
+        else "0010" when cSigs.ALUOp = "010" and fcn = "100000" -- addu (ADD)
+        else "0110" when cSigs.ALUOp = "010" and fcn = "100010" -- subu (SUB)
+        else "0000" when cSigs.ALUOp = "010" and fcn = "100100" -- AND
+        else "0001" when cSigs.ALUOp = "010" and fcn = "100101" -- OR
+        else "0111" when cSigs.ALUOp = "010" and fcn = "101010";-- SLT
 
     RegDst <= cSigs.RegDst;
     Branch <= cSigs.Branch;
