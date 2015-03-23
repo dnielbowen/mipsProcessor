@@ -10,8 +10,7 @@ VHD_OBJ = components.o \
           mem1k_RO.o \
           mem1k.o \
           cpu.o \
-          control.o \
-          atb_cpu.o
+          control.o
 
 ASM = fibonacci.s
 PROGOBJ = obj.o
