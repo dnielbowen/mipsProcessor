@@ -7,25 +7,13 @@ package COMPONENTS is
     subtype word is std_logic_vector(31 downto 0);
     subtype address is word;
 
-    type ALU_OP is (
-        -- Arithmetic
-        OP_ADD,
-        OP_ADDU,
-        OP_SUB,
-        OP_SUBU,
-        OP_MULT,
-        OP_MULTU,
-        OP_DIV,
-        OP_DIVU,
-        -- Logical
-        OP_AND,
-        OP_OR,
-        OP_NOT,
-        OP_NOR
-    );
+    -- constant RS_H   : integer := 25; -- High register source bit
+    -- constant RS_L   : integer := 21; -- High register source bit
 
+    subtype reg_address is std_logic_vector(4 downto 0);
     subtype op_func is std_logic_vector(5 downto 0);
 
+    -- TODO Add the rest of the ALU functions
     constant F_ADD   : op_func := "100000";
     constant F_ADDU  : op_func := "100001";
     constant F_AND   : op_func := "100100";

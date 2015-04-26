@@ -3,9 +3,12 @@ AS = $(BINDIR)/as-mips32
 OBJDUMP = $(BINDIR)/objdump
 
 VHD_OBJ = components.o \
-	  mem.o
+	  alu.o \
+	  mem.o \
+	  reg.o \
+	  atb_mips.o
 
-TB = tb_cpu
+TB = tb_mips
 IMPL = impl1
 IEEE = synopsys
 SIMDUR = 200us
