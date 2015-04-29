@@ -6,9 +6,12 @@ VHD_OBJ = components.o \
 	  alu.o \
 	  mem.o \
 	  reg.o \
+	  instr_mem.o \
+	  if.o \
 	  atb_mips.o
 
-TB = tb_mips
+# TB = tb_mips
+TB = tb_mips_imem
 IMPL = impl1
 IEEE = synopsys
 SIMDUR = 200us

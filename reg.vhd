@@ -20,8 +20,8 @@ architecture impl1 of MIPS_REG is
     type reg_file_t is array (0 to 31) of word;
     signal reg_file : reg_file_t;
 begin
-    data_a <= reg_file(conv_integer(unsigned(addr_a)));
-    data_b <= reg_file(conv_integer(unsigned(addr_b)));
+    data_read_a: data_a <= reg_file(conv_integer(unsigned(addr_a)));
+    data_read_b: data_b <= reg_file(conv_integer(unsigned(addr_b)));
 
     data_write: process (clk) is
     begin

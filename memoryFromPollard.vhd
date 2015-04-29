@@ -149,7 +149,7 @@ DATA_MEMORY_PROCESS:                          -- name of process ...
         WRITE (BUF, STR);                     -- some spaces
         HWRITE (BUF, TVAL);                   -- and the value
         WRITE (BUF, STR);                     -- more spaces
-	WRITE (BUF, NOW);                     -- current simulation time
+        WRITE (BUF, NOW);                     -- current simulation time
         WRITELINE (OUT_FILE, BUF);            -- and send line to file.
       elsif MEMWRITE = '1' then               -- if not read, but it is write
         TADR := CONV_INTEGER ( M_ADDR ) / 4;  -- set TADR to address as int
@@ -159,7 +159,7 @@ DATA_MEMORY_PROCESS:                          -- name of process ...
         WRITE (BUF, STR);                     -- then some spaces
         HWRITE (BUF, TVAL);                   -- and the value written
         WRITE (BUF, STR);                     -- still more spaces
-	WRITE (BUF, NOW);                     -- simulation time
+        WRITE (BUF, NOW);                     -- simulation time
         WRITELINE (OUT_FILE, BUF);            -- and send line to file
         THE_MEMORY ( CONV_INTEGER ( M_ADDR ) / 4) := M_DATA_IN;
                                               -- and finally, value to the mem

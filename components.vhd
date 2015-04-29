@@ -27,4 +27,24 @@ package COMPONENTS is
     constant F_SUB   : op_func := "100010";
     constant F_SUBU  : op_func := "100011";
 
+    -- IF Instruction Fetch stage
+    type if_out is record
+        pc_curr     : address; -- The PC associated with `instruction`
+        pc_incr     : address;
+        instruction : word;
+    end record;
+
+    type if_in is record
+        branch_pc     : address;
+        use_branch_pc : std_logic;
+    end record;
+
+    component MIPS_IMEM is
+        generic (imem_filename : string);
+        port (
+            data_addr : in  address;
+            data_out  : out word
+        );
+    end component;
+
 end package;
