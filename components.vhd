@@ -1,9 +1,13 @@
 library ieee;
 use ieee.std_logic_1164.all;
 
+use std.textio.all;
+use ieee.std_logic_textio.all;
+
 package COMPONENTS is
     ---TYPES-------------------------------------------------------- {{{1
 
+    subtype byte is std_logic_vector(7 downto 0);
     subtype word is std_logic_vector(31 downto 0);
     subtype address is word;
 
@@ -64,7 +68,7 @@ package COMPONENTS is
 
     ---CONSTANTS---------------------------------------------------- {{{1
 
-    constant g_delay: TIME := 1 ns;
+    constant MEM_DLY : time := 0.5 ns;
 
     -- TODO Add the rest of the ALU functions
     constant F_ADD   : op_func := "100000";
@@ -112,4 +116,35 @@ package COMPONENTS is
         );
     end component;
 
+    component MIPS_DMEM is
+        generic (
+            dmem_init_filename : string := "data/data_mem_init.txt";
+            dmem_filename      : string := "data/mem_trans.txt"
+        );
+        port (
+            clk       : in  std_logic;
+            addr      : in  address;
+            wr_enable : in  std_logic;
+            wr_data   : in  word;
+            data_out  : out word
+        );
+    end component;
+
+    ---FUNCTIONS---------------------------------------------------- {{{1
+
+    -- Provides a stdout debug function for memory parsers
+    procedure print_word (p_addr : in address; p_word : in word);
 end package;
+
+package body COMPONENTS is
+    -- Prints debug info (including debug ports) for the fp_mult testbench
+    procedure print_word (p_addr : in address; p_word : in word) is
+        variable buf: line;
+    begin
+        write(buf, string'("0x"));
+        hwrite(buf, p_addr);
+        write(buf, string'(": 0x"));
+        hwrite(buf, p_word);
+        writeline(OUTPUT, buf);
+    end procedure;
+end package body;

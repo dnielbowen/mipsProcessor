@@ -8,7 +8,7 @@ use ieee.std_logic_textio.all;
 
 -- An asynchronous 1K-word ROM populated by the contents of instruction memory
 entity MIPS_IMEM is
-    generic ( imem_filename : string := "data/imem_test_5instr.txt" );
+    generic (imem_filename : string := "data/imem_test_5instr.txt");
     port (
         data_addr : in  address;
         data_out  : out word
@@ -16,17 +16,13 @@ entity MIPS_IMEM is
 end entity;
 
 architecture impl1 of MIPS_IMEM is
-    constant MEM_DLY : time := 0.5 ns;
-
     subtype instr_str is string (1 to 25);
     type mem_str_t is array (1023 downto 0) of instr_str;
+    -- XXX incorrectly is word-addressed instead of byte-address
     type mem_t is array (1023 downto 0) of word;
 
     signal mem : mem_t := (others => (others => '0'));
     signal memAsm : mem_str_t := (others => (others => '0'));
-
-    signal pc : address := (others => '0');
-    signal instr_name : instr_str;
 begin
     initMemory: process is
         file fp: text open READ_MODE is imem_filename;
@@ -46,8 +42,8 @@ begin
                 read(bufRead, asm); -- Requires 25-char desc lines
 
                 -- And add the instruction to the memory
-                mem(conv_integer(unsigned(addr(10 downto 0)))) <= opcode;
-                memAsm(conv_integer(unsigned(addr(10 downto 0)))) <= asm;
+                mem(conv_integer(unsigned(addr(9 downto 0)))) <= opcode;
+                memAsm(conv_integer(unsigned(addr(9 downto 0)))) <= asm;
 
                 -- imem Debug output
                 -- write(bufWrite, string'("0x"));
@@ -63,7 +59,8 @@ begin
         wait;
     end process;
 
-    data_out <= mem(conv_integer(unsigned(data_addr(10 downto 0))));
+    data_out <= mem(conv_integer(unsigned(data_addr(10 downto 0))))
+                after MEM_DLY;
 end architecture;
 
 ----------------------------------------------------------------------
@@ -88,30 +85,21 @@ begin
         port map (s_pc, s_instr);
 
     signalTests1: process
-        procedure printInstruction(p_pc : in address; p_instr : in word) is
-            variable buf: line;
-        begin
-            write(buf, string'("0x"));
-            hwrite(buf, p_pc);
-            write(buf, string'(": 0x"));
-            hwrite(buf, p_instr);
-            writeline(OUTPUT, buf);
-        end procedure;
     begin
         s_pc <= x"00000004";
         wait for 100 ns;
         assert (s_instr = x"12345678");
-        printInstruction(s_pc, s_instr);
+        print_word(s_pc, s_instr);
 
         s_pc <= x"00000000";
         wait for 100 ns;
         assert (s_instr = x"00000000");
-        printInstruction(s_pc, s_instr);
+        print_word(s_pc, s_instr);
 
         s_pc <= x"0000000C";
         wait for 100 ns;
         assert (s_instr = x"11110000");
-        printInstruction(s_pc, s_instr);
+        print_word(s_pc, s_instr);
 
         wait;
     end process;

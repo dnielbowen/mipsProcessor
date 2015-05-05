@@ -10,10 +10,11 @@ VHD_OBJ = components.o \
 	  if.o \
 	  id.o \
 	  ex.o \
+	  data_mem.o \
 	  atb_mips.o
 
 # TB = tb_mips
-TB = tb_mips_imem
+TB = tb_mips_dmem
 IMPL = impl1
 IEEE = synopsys
 SIMDUR = 200us
