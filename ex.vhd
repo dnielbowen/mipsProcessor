@@ -11,13 +11,14 @@ entity MIPS_EX is
 end entity;
 
 architecture impl1 of MIPS_EX is
+    signal s_alu_result : word := (others => '0');
 begin
     alu: MIPS_ALU
         port map(
             alu_op => ex_in.alu_op,
             a => ex_in.val_a,
             b => ex_in.val_b,
-            f => ex_out.val_f);
+            f => s_alu_result);
 
     pipeline_registers: process (clk) is
     begin
@@ -25,6 +26,7 @@ begin
             ex_out.wb_reg_addr <= ex_in.wb_reg_addr;
             ex_out.enable_memw <= ex_in.enable_memw;
             ex_out.enable_memr <= ex_in.enable_memr;
+            ex_out.alu_result <= s_alu_result;
         end if;
     end process;
 end architecture;

@@ -1,9 +1,10 @@
 library ieee;
 use ieee.std_logic_1164.all;
-use ieee.numeric_std.all;
+use ieee.std_logic_arith.all;
 use work.components.all;
 
 entity MIPS_IF is
+    generic (imem_filename : string := "data/instr_mem.txt");
     port (
         clk    : in  std_logic;
         if_in  : in  if_in;
@@ -12,26 +13,26 @@ entity MIPS_IF is
 end entity;
 
 architecture impl1 of MIPS_IF is
-    signal pc, pc_incr : address;
+    signal s_pc : address;
+    signal s_instruction : word;
 begin
     imem1: MIPS_IMEM
-        generic map ("imem_prog1.txt")
-        port map(pc, if_out.instruction);
+        generic map (imem_filename)
+        port map(s_pc, s_instruction);
 
-    choose_next_pc: process (clk) is
+    pipeline_registers: process (clk) is
     begin
-    if rising_edge(clk) then
-        if if_in.stall_pc = '0' then
-            if if_in.use_branch_pc = '1' then
-                pc <= if_in.branch_pc;
-            else
-                pc <= pc_incr;
+        if rising_edge(clk) then
+            if if_in.disable_pc_incr = '0' then
+                if if_in.enable_delta_pc = '1' then
+                    s_pc <= unsigned(s_pc) + 4 + signed(if_in.delta_pc);
+                else
+                    s_pc <= unsigned(s_pc) + 4;
+                end if;
             end if;
-        end if;
-    end if;
-    end process;
 
-    pc_incr <= std_logic_vector(unsigned(pc) + 4);
-    if_out.pc_curr <= pc;
-    if_out.pc_incr <= pc_incr;
+            if_out.pc <= s_pc;
+            if_out.instruction <= s_instruction;
+        end if;
+    end process;
 end architecture;

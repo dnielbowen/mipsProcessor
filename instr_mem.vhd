@@ -18,7 +18,7 @@ end entity;
 architecture impl1 of MIPS_IMEM is
     subtype instr_str is string (1 to 25);
     type mem_str_t is array (1023 downto 0) of instr_str;
-    -- XXX incorrectly is word-addressed instead of byte-address
+    -- XXX incorrectly is word-addressed instead of byte-addressed
     type mem_t is array (1023 downto 0) of word;
 
     signal mem : mem_t := (others => (others => '0'));

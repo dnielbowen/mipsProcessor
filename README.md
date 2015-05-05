@@ -75,20 +75,6 @@ changing the PC.
 The purpose of this stage is to:
 - Present the appropriate instruction word at its output on each clock cycle.
 
-type if_in is record
-    enable_delta_pc : std_logic;
-    delta_pc        : word;
-        -- Adds delta_pc to incremented PC (for branches)
-
-    disable_pc_incr : std_logic;
-        -- Prevents PC from being incremented (for stalls)
-end record;
-
-type if_out is record
-    pc          : address; -- The PC associated with `instruction` (for debug)
-    instruction : word;
-end record;
-
 The IF unit holds an internal PC (initialized to 0) and an internal instruction 
 memory. On each clock cycle, this internal PC is incremented by 4. There is an 
 optional delta to also add to this internal PC, representing the branch amount 
@@ -101,41 +87,6 @@ The purpose of this stage is to:
 - Detect branches and present branch PC
 - Generate various control signals
 
-type id_in is record
-    instruction : word;
-
-    enable_ext_br_data : std_logic;
-    ext_br_data : word;
-        -- Forwarded data for branching. It's the responsibility of the CPU 
-        -- entity to determine data/branch hazards and present the appropriate 
-        -- data here.
-
-    wb_data     : word;
-    wb_reg_addr : reg_address;
-        -- Represents the address to write wb_data to. If zero (register r0), 
-        -- wb_data is ignored.
-end record;
-
-type id_out is record
-    val_a       : word;
-    val_b       : word;
-    alu_op      : op_func;
-
-    enable_delta_pc : std_logic;
-    delta_pc    : word;
-
-    wb_reg_addr : reg_address;
-        -- Dictates which register the result is written to during WB. If this 
-        -- is register zero, nothing is written.
-    enable_memw : std_logic;
-        -- When asserted, the result from the ALU represents a memory address 
-        -- and should be written to memory. This represents a store.
-    enable_memr : std_logic;
-        -- When asserted, the result from the ALU represents a memory address, 
-        -- whose contents should then be written to register wb_reg_addr. This 
-        -- represents a load.
-end record;
-
 The ID stage owns the register file (thus actually executes both the ID and WB 
 stages).
 
@@ -143,24 +94,6 @@ stages).
 
 The purpose of this stage is to:
 - Compute the ALU operation on val_a and val_b
-
-type ex_in is record
-    val_a : word;
-    val_b : word;
-    alu_op : op_func;
-
-    wb_reg_addr : reg_address;
-    enable_memw : std_logic;
-    enable_memr : std_logic;
-end record;
-
-type ex_out is record
-    val_f       : word;
-
-    wb_reg_addr : reg_address;
-    enable_memw : std_logic;
-    enable_memr : std_logic;
-end record;
 
 It may be possible to just replace this stage with the ALU itself. I'm not sure 
 what I'd be adding, when the registers could just be carried forward by the 
@@ -179,19 +112,22 @@ This module mostly just saves state from one stage to the next.
 The purpose of this stage is to:
 - Access memory
 
-type mem_in is record
-    val_f : word;
+For a read:
+    - Use alu result for address
+    - Set output to memory output
 
-    wb_reg_addr : reg_address;
-    enable_memw : std_logic;
-    enable_memr : std_logic;
-end record;
+For a write:
+    - Use alu result for address
+    - Set output to 0 (doesn't matter)
+    - Set wb_reg to r0
 
-type mem_out is record
-    val_f       : word;
-    wb_reg_addr : reg_address;
-end record;
+For no memory access:
+    - Set output to data
+    - Make sure wb_reg is passed through
 
+Note: If mem_in.enable_memw and mem_in.enable_memr were ever both asserted, the 
+WB stage would be a nop and the value in reg_to_mem would be written to memory 
+at address alu_result. This should never occur
 
 ## CPU
 

@@ -4,12 +4,12 @@ OBJDUMP = $(BINDIR)/objdump
 
 VHD_OBJ = components.o \
 	  alu.o \
-	  mem.o \
 	  reg.o \
 	  instr_mem.o \
 	  if.o \
 	  id.o \
 	  ex.o \
+	  mem.o \
 	  data_mem.o \
 	  atb_mips.o
 
