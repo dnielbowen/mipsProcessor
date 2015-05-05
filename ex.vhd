@@ -1,8 +1,30 @@
 library ieee;
 use ieee.std_logic_1164.all;
+use work.components.all;
 
-entity MIPS_IF is
+entity MIPS_EX is
     port (
-        D
+        clk    : in  std_logic;
+        ex_in  : in  ex_in;
+        ex_out : out ex_out
     );
-end;
+end entity;
+
+architecture impl1 of MIPS_EX is
+begin
+    alu: MIPS_ALU
+        port map(
+            alu_op => ex_in.alu_op,
+            a => ex_in.val_a,
+            b => ex_in.val_b,
+            f => ex_out.val_f);
+
+    pipeline_registers: process (clk) is
+    begin
+        if rising_edge(clk) then
+            ex_out.wb_reg_addr <= ex_in.wb_reg_addr;
+            ex_out.enable_memw <= ex_in.enable_memw;
+            ex_out.enable_memr <= ex_in.enable_memr;
+        end if;
+    end process;
+end architecture;

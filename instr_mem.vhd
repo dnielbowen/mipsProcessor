@@ -6,9 +6,9 @@ use work.components.all;
 use std.textio.all;
 use ieee.std_logic_textio.all;
 
--- An asynchronous ROM populated by the contents of instruction memory
+-- An asynchronous 1K-word ROM populated by the contents of instruction memory
 entity MIPS_IMEM is
-    generic ( imem_filename : string := "test/imem_test_5instr.txt" );
+    generic ( imem_filename : string := "data/imem_test_5instr.txt" );
     port (
         data_addr : in  address;
         data_out  : out word
@@ -16,51 +16,54 @@ entity MIPS_IMEM is
 end entity;
 
 architecture impl1 of MIPS_IMEM is
-    signal pc : address;
-    signal instr_name : string (1 to 25);
-
     constant MEM_DLY : time := 0.5 ns;
-begin
-    INSTR_MEM_PROC: process ( pc ) is
-        type INSTR_STR_ARY is array ( 0 to 1023 ) of STRING ( 1 to 25 );
-        type MEMORY is array ( 0 to 1023 ) of BIT_VECTOR ( 31 downto 0 );
-        file IN_FILE     : TEXT open READ_MODE is imem_filename;
-        variable MEM     : MEMORY := ( others => X"0000_0000");
-        variable IADDR   : INTEGER;               -- integer for address
-        variable DTEMP   : BIT_VECTOR ( 31 downto 0 );
-        variable INIT    : INTEGER := 0;          -- when to initialize...
-        variable BUF     : LINE;
-        variable ADR_STR : STD_LOGIC_VECTOR ( 31 downto 0 );
-        variable TADR    : INTEGER;
-        variable TDATA   : STD_LOGIC_VECTOR ( 31 downto 0 );
-        variable BDATA   : BIT_VECTOR ( 31 downto 0 );
-        variable STR_ING : STRING ( 1 to 25 );
-        variable MEMSTRR : INSTR_STR_ARY :=
-            (others => "                         ");
-    begin
-        if INIT = 0 then
-            while not (ENDFILE ( IN_FILE )) loop
-                READLINE ( IN_FILE, BUF );
-                HREAD    ( BUF, ADR_STR ); -- get the address on the line
-                TADR := CONV_INTEGER ( unsigned(ADR_STR (14 downto 2)));
-                HREAD    ( BUF, TDATA   ); -- get the data on the line
-                BDATA := To_bitvector (TDATA);
-                MEM ( TADR ) := BDATA;     -- put into memory
-                for J in 1 to 25 loop
-                    STR_ING(J) := ' ';
-                end loop;
-                READ     ( BUF, STR_ING ); -- get instruction string
-                MEMSTRR ( TADR ) := STR_ING;
-                report "iteration of loop";
-            end loop;
-            INIT := 1;                   -- when all data in, set INIT to 1;
-        end if;                        -- end of INIT check
 
-        IADDR := CONV_INTEGER ( unsigned(pc ( 14 downto 2 )));
-        data_out <= To_StdLogicVector ( MEM ( IADDR )) after MEM_DLY;
-        instr_name <= MEMSTRR ( IADDR );
-        -- report "should hit  INSTRUC";
+    subtype instr_str is string (1 to 25);
+    type mem_str_t is array (1023 downto 0) of instr_str;
+    type mem_t is array (1023 downto 0) of word;
+
+    signal mem : mem_t := (others => (others => '0'));
+    signal memAsm : mem_str_t := (others => (others => '0'));
+
+    signal pc : address := (others => '0');
+    signal instr_name : instr_str;
+begin
+    initMemory: process is
+        file fp: text open READ_MODE is imem_filename;
+        variable bufRead, bufWrite: line;
+        variable memoryIsInit : boolean := false;
+
+        variable addr   : address;
+        variable opcode : word;
+        variable asm    : instr_str;
+    begin
+        if not memoryIsInit then
+            while not endfile(fp) loop
+                -- Read the instruction on the current line
+                readline(fp, bufRead);
+                hread(bufRead, addr);
+                hread(bufRead, opcode);
+                read(bufRead, asm); -- Requires 25-char desc lines
+
+                -- And add the instruction to the memory
+                mem(conv_integer(unsigned(addr(10 downto 0)))) <= opcode;
+                memAsm(conv_integer(unsigned(addr(10 downto 0)))) <= asm;
+
+                -- imem Debug output
+                -- write(bufWrite, string'("0x"));
+                -- hwrite(bufWrite, addr);
+                -- write(bufWrite, string'(": 0x"));
+                -- hwrite(bufWrite, opcode);
+                -- write(bufWrite, string'(", "));
+                -- write(bufWrite, asm);
+                -- writeline(OUTPUT, bufWrite);
+            end loop;
+            memoryIsInit := true;
+        end if;
+        wait;
     end process;
+
+    data_out <= mem(conv_integer(unsigned(data_addr(10 downto 0))));
 end architecture;
 
 ----------------------------------------------------------------------
@@ -68,33 +71,48 @@ end architecture;
 library ieee;
 use ieee.std_logic_1164.all;
 use ieee.std_logic_arith.all;
+
 use std.textio.all;
+use ieee.std_logic_textio.all;
 use work.components.all;
 
 entity TB_MIPS_IMEM is
 end entity;
 
 architecture impl1 of TB_MIPS_IMEM is
-    signal s_pc : address;
+    signal s_pc : address := (others => '0');
     signal s_instr : word;
 begin
     uut : MIPS_IMEM
-        generic map ("instr_mem.txt")
+        generic map ("data/instr_5instr.txt")
         port map (s_pc, s_instr);
 
     signalTests1: process
-        variable buf: line;
+        procedure printInstruction(p_pc : in address; p_instr : in word) is
+            variable buf: line;
+        begin
+            write(buf, string'("0x"));
+            hwrite(buf, p_pc);
+            write(buf, string'(": 0x"));
+            hwrite(buf, p_instr);
+            writeline(OUTPUT, buf);
+        end procedure;
     begin
-        s_pc <= x"00000000";
-        wait for 100 ns;
-        assert (s_instr = x"00000000");
-
         s_pc <= x"00000004";
         wait for 100 ns;
         assert (s_instr = x"12345678");
+        printInstruction(s_pc, s_instr);
 
-        write(buf, string'("Assertions tb_alu complete"));
-        writeline(output, buf);
+        s_pc <= x"00000000";
+        wait for 100 ns;
+        assert (s_instr = x"00000000");
+        printInstruction(s_pc, s_instr);
+
+        s_pc <= x"0000000C";
+        wait for 100 ns;
+        assert (s_instr = x"11110000");
+        printInstruction(s_pc, s_instr);
+
         wait;
     end process;
 end architecture;

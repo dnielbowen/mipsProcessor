@@ -21,10 +21,12 @@ begin
     choose_next_pc: process (clk) is
     begin
     if rising_edge(clk) then
-        if if_in.use_branch_pc = '1' then
-            pc <= if_in.branch_pc;
-        else
-            pc <= pc_incr;
+        if if_in.stall_pc = '0' then
+            if if_in.use_branch_pc = '1' then
+                pc <= if_in.branch_pc;
+            else
+                pc <= pc_incr;
+            end if;
         end if;
     end if;
     end process;

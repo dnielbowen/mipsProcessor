@@ -4,9 +4,9 @@ use ieee.numeric_std.all;
 
 use work.components.all;
 
+-- An asynchronous ALU
 entity MIPS_ALU is
     port (
-        clk     :   in  std_logic;
         alu_op  :   in  op_func;
         a       :   in  word;
         b       :   in  word;

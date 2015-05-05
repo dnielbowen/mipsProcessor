@@ -8,6 +8,8 @@ VHD_OBJ = components.o \
 	  reg.o \
 	  instr_mem.o \
 	  if.o \
+	  id.o \
+	  ex.o \
 	  atb_mips.o
 
 # TB = tb_mips
