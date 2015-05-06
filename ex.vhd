@@ -24,8 +24,8 @@ begin
     begin
         if rising_edge(clk) then
             ex_out.wb_reg_addr <= ex_in.wb_reg_addr;
-            ex_out.enable_memw <= ex_in.enable_memw;
-            ex_out.enable_memr <= ex_in.enable_memr;
+            ex_out.mux_mem <= ex_in.mux_mem;
+            ex_out.reg_to_mem <= ex_in.reg_to_mem;
             ex_out.alu_result <= s_alu_result;
         end if;
     end process;

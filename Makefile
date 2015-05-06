@@ -3,14 +3,14 @@ AS = $(BINDIR)/as-mips32
 OBJDUMP = $(BINDIR)/objdump
 
 VHD_OBJ = components.o \
+	  data_mem.o \
+	  instr_mem.o \
 	  alu.o \
 	  reg.o \
-	  instr_mem.o \
 	  if.o \
 	  id.o \
 	  ex.o \
 	  mem.o \
-	  data_mem.o \
 	  atb_mips.o
 
 # TB = tb_mips

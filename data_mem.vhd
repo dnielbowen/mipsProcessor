@@ -17,6 +17,9 @@ entity MIPS_DMEM is
         addr      : in  address;
         wr_enable : in  std_logic;
         wr_data   : in  word;
+        data_size : in  std_logic_vector(1 downto 0);
+            -- Number of bytes (1-4) to read/write. Warning: likely gotcha: 
+            -- this is implemented as number of bytes-1, not number of bytes!
         data_out  : out word
     );
 end entity;
@@ -67,10 +70,9 @@ begin
         elsif rising_edge(clk) then
             i := conv_integer(unsigned(addr(9 downto 0)));
             if wr_enable = '1' then
-                mem(i+0) <= wr_data( 7 downto  0);
-                mem(i+1) <= wr_data(15 downto  8);
-                mem(i+2) <= wr_data(23 downto 16);
-                mem(i+3) <= wr_data(31 downto 24);
+                for j in 0 to conv_integer(unsigned(data_size)) loop
+                    mem(i+j) <= wr_data((8*j)+7 downto 8*j);
+                end loop;
 
                 write(buf_write, string'("W  "));
                 hwrite(buf_write, addr);
@@ -95,6 +97,7 @@ begin
         if wr_enable = '1' then
             data_out <= (others => 'Z');
         else
+            -- XXX Ignores data_size for now on reads
             i := conv_integer(unsigned(addr(9 downto 0)));
             data_out <= mem(i+3) & mem(i+2) & mem(i+1) & mem(i+0);
         end if;
@@ -119,10 +122,13 @@ architecture impl1 of TB_MIPS_DMEM is
     signal s_data_out, s_data_in : word;
 
     signal s_clk, s_wr_enable : std_logic := '0';
+    signal s_data_size : std_logic_vector(1 downto 0) := "11";
 begin
     uut : MIPS_DMEM
-        generic map ("data/data_mem_init.txt", "data/mem_trans_test.txt")
-        port map (s_clk, s_addr, s_wr_enable, s_data_in, s_data_out);
+        generic map
+            ("data/data_mem_init.txt", "data/mem_trans_test.txt")
+        port map
+            (s_clk, s_addr, s_wr_enable, s_data_in, s_data_size, s_data_out);
 
     clock_process: process is
     begin
@@ -149,7 +155,18 @@ begin
 
         s_addr <= x"00000068";
         wait for 1 ns;
-        assert s_data_out <= x"00001068";
+        assert s_data_out = x"00001068";
+        print_word(s_addr, s_data_out);
+
+        s_addr <= x"00000065";
+        s_data_in <= x"FFFFFFFF";
+        s_data_size <= "00"; -- 1 byte
+        s_wr_enable <= '1';
+        wait for 15 ns;
+        s_wr_enable <= '0';
+        s_addr <= x"00000064";
+        wait for 10 ns;
+        assert s_data_out = x"DEADFFEF";
         print_word(s_addr, s_data_out);
  
         wait;

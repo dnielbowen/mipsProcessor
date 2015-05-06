@@ -142,3 +142,38 @@ like it would for an ALU.
 
 The pipeline components are built in such a way that they are ignorant to the 
 rest of the system. They don't know they're building a processor.
+
+# Report
+
+## Discussion
+
+Earlier in the semester, I wrote a single-cycle MIPS implementation modeled 
+after Figure 4.16 in the text (relatively simple compared to our pipelined 
+version in Figure 4.65). Data memory was monitored in a wave viewer and 
+instruction memory was populated from the Microchip XC-32 assembler output run 
+through the `objdump` disassembler included with Microchip's compiler. A python 
+script was written to parse through the disassembly and write VHDL to populate 
+each byte of instruction memory with opcodes in the appropriate format. A 
+fragment of the output of this python script for a fibonacci program that was 
+written is shown below.
+
+```vhdl
+-- fibonacci.s
+-- 0x00000000 nop
+mem(0)<=x"00"; mem(1)<=x"00"; mem(2)<=x"00"; mem(3)<=x"00";
+-- 0x241c0100 li gp,256
+mem(4)<=x"00"; mem(5)<=x"01"; mem(6)<=x"1c"; mem(7)<=x"24";
+-- 0x24090032 li t1,50
+mem(8)<=x"32"; mem(9)<=x"00"; mem(10)<=x"09"; mem(11)<=x"24";
+-- 0x240a0000 li t2,0
+mem(12)<=x"00"; mem(13)<=x"00"; mem(14)<=x"0a"; mem(15)<=x"24";
+-- 0xaf8a0000 sw t2,0(gp)
+mem(16)<=x"00"; mem(17)<=x"00"; mem(18)<=x"8a"; mem(19)<=x"af";
+.
+.
+.
+```
+
+However the later-supplied instruction memory for this project, which reads a 
+file at runtime to obtain its initial contents, is a simpler approach, as it 
+doesn't require modification to the data memory's VHDL source.

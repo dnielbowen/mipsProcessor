@@ -24,7 +24,7 @@ begin
     begin
         if rising_edge(clk) then
             if if_in.disable_pc_incr = '0' then
-                if if_in.enable_delta_pc = '1' then
+                if if_in.enable_delta_pc then
                     s_pc <= unsigned(s_pc) + 4 + signed(if_in.delta_pc);
                 else
                     s_pc <= unsigned(s_pc) + 4;
