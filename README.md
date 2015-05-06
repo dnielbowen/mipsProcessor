@@ -83,12 +83,18 @@ from the ID stage. The PC increment can also be disabled.
 ### ID
 
 The purpose of this stage is to:
-- Present ALU inputs (from registers) on its output
+- Receive a PC and instruction
+- Generate pipeline registers
 - Detect branches and present branch PC
-- Generate various control signals
 
 The ID stage owns the register file (thus actually executes both the ID and WB 
 stages).
+
+### Testing
+
+It will be necessary to set the register file state for testing. It'd thus be 
+nice to be able to write assembly statements. I should thus probably test the 
+IF and ID stages together.
 
 ## EX
 

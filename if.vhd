@@ -13,8 +13,8 @@ entity MIPS_IF is
 end entity;
 
 architecture impl1 of MIPS_IF is
-    signal s_pc : address;
-    signal s_instruction : word;
+    signal s_pc : address := (others => '0');
+    signal s_instruction : word := (others => '0');
 begin
     imem1: MIPS_IMEM
         generic map (imem_filename)

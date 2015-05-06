@@ -16,6 +16,7 @@ begin
     alu: MIPS_ALU
         port map(
             alu_op => ex_in.alu_op,
+            sh_amnt => ex_in.sh_amnt,
             a => ex_in.val_a,
             b => ex_in.val_b,
             f => s_alu_result);

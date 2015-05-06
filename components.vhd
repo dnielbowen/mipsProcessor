@@ -21,16 +21,17 @@ package COMPONENTS is
         MEM_SB,
         MEM_SH,
         MEM_SW,
-        MEM_SWL,
-        MEM_SWR,
 
         MEM_LB,
         MEM_LBU,
         MEM_LH,
         MEM_LHU,
-        MEM_LW,
-        MEM_LWR,
-        MEM_LWL
+        MEM_LW
+
+        -- MEM_SWL, -- TODO implement load/store left/right words
+        -- MEM_SWR,
+        -- MEM_LWR,
+        -- MEM_LWL
     );
 
     ---PIPELINE REGISTER TYPES-------------------------------------- {{{1
@@ -73,6 +74,7 @@ package COMPONENTS is
         val_a       : word;
         val_b       : word;
         alu_op      : op_func;
+        sh_amnt     : std_logic_vector(4 downto 0);
 
         enable_delta_pc : boolean;
         delta_pc    : word;
@@ -95,6 +97,7 @@ package COMPONENTS is
         val_a : word;
         val_b : word;
         alu_op : op_func;
+        sh_amnt : std_logic_vector(4 downto 0);
 
         reg_to_mem   : word;
 
@@ -134,13 +137,14 @@ package COMPONENTS is
 
     ---CONSTANTS---------------------------------------------------- {{{1
 
-    -- These opcodes come from Figure A.10.2 MIPS opcode map
 
     constant MEM_DLY : time := 0.5 ns;
 
     constant R_0  : reg_address := "00000"; -- $0, read-only zero
-    constant R_31 : reg_address := "00000"; -- $ra, return address
+    constant R_31 : reg_address := "11111"; -- $ra, return address
 
+    -- These opcodes are mostly from Hennessy/Patterson Figure A.10.2 (MIPS 
+    -- opcode map)
     constant F_SLL   : op_func := "000000";
 
     constant F_SRL   : op_func := "000010";
@@ -170,35 +174,35 @@ package COMPONENTS is
     constant F_SLT   : op_func := "101010";
     constant F_SLTU  : op_func := "101011";
 
-    constant O_SPECIAL : opcode := "000000"; -- Rest of opcode in func
-    constant O_REGIMM  : opcode := "000001"; -- Single-register branch tests
-    constant O_J       : opcode := "000010";
-    constant O_JAL     : opcode := "000011";
-    constant O_BEQ     : opcode := "000100";
-    constant O_BNE     : opcode := "000101";
-    constant O_BLEZ    : opcode := "000110";
-    constant O_BGTZ    : opcode := "000111";
-    constant O_ADDI    : opcode := "001000";
-    constant O_ADDIU   : opcode := "001001";
-    constant O_SLTI    : opcode := "001010";
-    constant O_SLTIU   : opcode := "001011";
-    constant O_ANDI    : opcode := "001100";
-    constant O_ORI     : opcode := "001101";
-    constant O_XORI    : opcode := "001110";
-    constant O_LUI     : opcode := "001111";
+    constant OPCODE_SPECIAL : opcode := "000000"; -- Rest of opcode in func
+    constant OPCODE_REGIMM  : opcode := "000001"; -- Single-reg branch tests
+    constant OPCODE_J       : opcode := "000010";
+    constant OPCODE_JAL     : opcode := "000011";
+    constant OPCODE_BEQ     : opcode := "000100";
+    constant OPCODE_BNE     : opcode := "000101";
+    constant OPCODE_BLEZ    : opcode := "000110";
+    constant OPCODE_BGTZ    : opcode := "000111";
+    constant OPCODE_ADDI    : opcode := "001000";
+    constant OPCODE_ADDIU   : opcode := "001001";
+    constant OPCODE_SLTI    : opcode := "001010";
+    constant OPCODE_SLTIU   : opcode := "001011";
+    constant OPCODE_ANDI    : opcode := "001100";
+    constant OPCODE_ORI     : opcode := "001101";
+    constant OPCODE_XORI    : opcode := "001110";
+    constant OPCODE_LUI     : opcode := "001111";
 
-    constant O_LB      : opcode := "100000";
-    constant O_LH      : opcode := "100001";
-    constant O_LWL     : opcode := "100010";
-    constant O_LW      : opcode := "100011";
-    constant O_LBU     : opcode := "100100";
-    constant O_LHU     : opcode := "100101";
-    constant O_LWR     : opcode := "100110";
+    constant OPCODE_LB      : opcode := "100000";
+    constant OPCODE_LH      : opcode := "100001";
+    constant OPCODE_LWL     : opcode := "100010";
+    constant OPCODE_LW      : opcode := "100011";
+    constant OPCODE_LBU     : opcode := "100100";
+    constant OPCODE_LHU     : opcode := "100101";
+    constant OPCODE_LWR     : opcode := "100110";
 
-    constant O_SB      : opcode := "101000";
-    constant O_SH      : opcode := "101001";
-    constant O_SWL     : opcode := "101010";
-    constant O_SW      : opcode := "101011";
+    constant OPCODE_SB      : opcode := "101000";
+    constant OPCODE_SH      : opcode := "101001";
+    constant OPCODE_SWL     : opcode := "101010";
+    constant OPCODE_SW      : opcode := "101011";
 
     constant RT_BLTZ   : reg_address := "00001";
     constant RT_BGEZ   : reg_address := "00010";
@@ -231,6 +235,7 @@ package COMPONENTS is
     component MIPS_ALU is
         port (
             alu_op  :   in  op_func;
+            sh_amnt :   in  std_logic_vector (4 downto 0);
             a       :   in  word;
             b       :   in  word;
             f       :   out word
@@ -252,6 +257,45 @@ package COMPONENTS is
                 -- this is implemented as number of bytes-1, not number of 
                 -- bytes!
             data_out  : out word
+        );
+    end component;
+
+    ---PIPELINE STAGES---------------------------------------------- {{{1
+
+    component MIPS_IF is
+        generic (imem_filename : string);
+        port (
+            clk    : in  std_logic;
+            if_in  : in  if_in;
+            if_out : out if_out
+        );
+    end component;
+
+    component MIPS_ID is
+        port (
+            clk    : in  std_logic;
+            id_in  : in  id_in;
+            id_out : out id_out
+        );
+    end component;
+
+    component MIPS_EX is
+        port (
+            clk    : in  std_logic;
+            ex_in  : in  ex_in;
+            ex_out : out ex_out
+        );
+    end component;
+
+    component MIPS_MEM is
+        generic (
+            dmem_init_filename : string;
+            dmem_filename      : string
+        );
+        port (
+            clk    : in  std_logic;
+            mem_in  : in  mem_in;
+            mem_out : out mem_out
         );
     end component;
 

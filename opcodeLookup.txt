@@ -1,0 +1,17 @@
+# Basic
+00000000 nop
+3c10ffff lui s0,0xffff
+36101010 ori s0,s0,0x1010
+24090001 li t1,1
+240a0002 li t2,2
+240b0003 li t3,3
+01496020 add t4,t2,t1
+
+35290001 ori t1,t1,0x1
+354a0002 ori t2,t2,0x2
+356b0003 ori t3,t3,0x3
+
+354a0001            ori t2,t2,0x1
+356b0002            ori t3,t3,0x2
+358c0003            ori t4,t4,0x3
+014b7020             add t6,t2,t3

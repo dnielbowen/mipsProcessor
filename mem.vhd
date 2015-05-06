@@ -3,6 +3,10 @@ use ieee.std_logic_1164.all;
 use work.components.all;
 
 entity MIPS_MEM is
+    generic (
+        dmem_init_filename : string := "data/data_mem_init.txt";
+        dmem_filename      : string := "data/mem_trans.txt"
+    );
     port (
         clk    : in  std_logic;
         mem_in  : in  mem_in;
@@ -18,7 +22,7 @@ architecture impl1 of MIPS_MEM is
     signal data_size : std_logic_vector(1 downto 0) := "11"; -- Read 4 Bytes
 begin
     dmem1: MIPS_DMEM
-        generic map ("data/data_mem_init.txt", "data/mem_trans.txt")
+        generic map (dmem_init_filename, dmem_filename)
         port map(
             clk => clk,
             addr => mem_in.alu_result,
@@ -32,7 +36,9 @@ begin
 
     mem_write_data <= mem_in.reg_to_mem;
 
-    --wr_enable <= '1' when (mem_in.mux_mem = MEM_SW|MEM_SB) else '0'; -- XXX
+    wr_enable <= '1' when(mem_in.mux_mem = MEM_SW or
+                          mem_in.mux_mem = MEM_SH or
+                          mem_in.mux_mem = MEM_SB) else '0';
 
     b_sign_ext <= x"FFFFFF" & mem_read_data(7 downto 0)
                   when mem_read_data(7) = '1' else
@@ -66,7 +72,6 @@ begin
                 when MEM_LHU =>
                     mem_out.val_f <= x"0000" & mem_read_data(15 downto 0);
                 when MEM_LW  => mem_out.val_f <= mem_read_data;
-                -- TODO: MEM_LWL, MEM_LWR
                 when others =>
                     mem_out.val_f <= mem_in.alu_result;
             end case;
