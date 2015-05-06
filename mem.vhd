@@ -30,7 +30,7 @@ begin
     data_size <= "00" when (mem_in.mux_mem = MEM_SB) else
                  "01" when (mem_in.mux_mem = MEM_SH) else "11";
 
-    -- mem_write_data <= mem_in.reg_to_mem,
+    mem_write_data <= mem_in.reg_to_mem;
 
     --wr_enable <= '1' when (mem_in.mux_mem = MEM_SW|MEM_SB) else '0'; -- XXX
 
