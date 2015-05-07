@@ -21,7 +21,7 @@ TB = tb_mips_cpu
 # TB = tb_mips_reg
 IMPL = impl1
 IEEE = synopsys
-SIMDUR = 200ns
+SIMDUR = 500ns
 
 all: $(VHD_OBJ)
 	ghdl -e --ieee=$(IEEE) $(TB) $(IMPL)
@@ -30,11 +30,13 @@ all: $(VHD_OBJ)
 %.o: %.vhd
 	ghdl -a --ieee=$(IEEE) $<
 
+# Disabling asserts is probably a bad idea, but I just can't figure out the 
+# source of those uninitialized values at the begininng
 ex:
 	./$(TB)-$(IMPL) \
 	    --wave=$(TB)-$(IMPL).ghw \
 	    --stop-time=$(SIMDUR) \
-	    --ieee-asserts=disable-at-0
+	    --ieee-asserts=disable
 
 clean:
 	rm -f *.cf tb_* *.ghw *.vcd *.o tags
@@ -42,6 +44,6 @@ clean:
 PROGOBJ = test_prog.o
 prog:
 	$(AS) -mips32 -O0 $(ASM) -o $(PROGOBJ)
-	$(OBJDUMP) -d $(PROGOBJ) | \
+	$(OBJDUMP) -d $(PROGOBJ) -z -M no-aliases | \
 	    grep -P '[\da-f]+:' | \
 	    python convert_opcodes.py > $(ASM).txt

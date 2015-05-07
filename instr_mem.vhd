@@ -54,6 +54,8 @@ begin
                 -- write(bufWrite, asm);
                 -- writeline(OUTPUT, bufWrite);
             end loop;
+            write(bufWrite, string'("Instruction memory loaded"));
+            writeline(OUTPUT, bufWrite);
             memoryIsInit := true;
         end if;
         wait;

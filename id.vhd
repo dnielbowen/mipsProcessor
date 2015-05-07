@@ -109,14 +109,13 @@ begin
                 case instr_func is
                     when F_MULT | F_MULTU | F_DIV | F_DIVU | F_ADD | F_ADDU |
                          F_SUB  | F_SUBU  | F_AND | F_OR   | F_XOR | F_NOR  |
-                         F_SLT  | F_SLTU =>
+                         F_SLT  | F_SLTU  | F_SLL | F_SRL  | F_SLLV| F_SRLV =>
                         cw <= (branch_criteria => B_NA,
                                mux_val_a       => M_REGA,
                                mux_val_b       => M_REGB,
                                alu_op          => instr_func,
                                mux_mem         => MEM_NA,
                                wb_reg_addr     => instr_rd);
-                    -- TODO Implement shift operations w/ shamount
                     when others =>
                         cw <= (B_NA, M_R_0, M_R_0, F_ADDU, MEM_NA, R_0);
                 end case;
@@ -188,6 +187,10 @@ begin
                 cw <= (B_NA,  M_REGA, M_IMMS,   F_ADD,  MEM_SW, R_0);
             when others =>
         end case;
+    end process;
+
+    writeback_process: process (clk) is
+    begin
     end process;
 
     pipeline_registers: process (clk) is

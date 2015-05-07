@@ -57,15 +57,16 @@ begin
                 mem(i+3) <= v_data(31 downto 24);
 
                 -- dmem Debug output
-                write(buf_write, string'("0x"));
-                hwrite(buf_write, v_addr);
-                write(buf_write, string'(": file: 0x"));
-                hwrite(buf_write, v_data);
-                write(buf_write, string'(" iAddr="));
-                write(buf_write, i);
-                writeline(OUTPUT, buf_write);
-
+                -- write(buf_write, string'("0x"));
+                -- hwrite(buf_write, v_addr);
+                -- write(buf_write, string'(": file: 0x"));
+                -- hwrite(buf_write, v_data);
+                -- write(buf_write, string'(" iAddr="));
+                -- write(buf_write, i);
+                -- writeline(OUTPUT, buf_write);
             end loop;
+            write(buf_write, string'("Data memory loaded"));
+            writeline(OUTPUT, buf_write);
             memory_is_init := true;
         elsif rising_edge(clk) then
             i := conv_integer(unsigned(addr(9 downto 0)));
