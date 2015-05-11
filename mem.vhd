@@ -83,3 +83,66 @@ begin
         end if;
     end process;
 end architecture;
+
+------------------------------------------------------------
+
+library ieee;
+use ieee.std_logic_1164.all;
+
+use work.components.all;
+
+entity TB_MIPS_MEM is
+end entity;
+
+architecture impl1 of TB_MIPS_MEM is
+    signal s_clk : std_logic := '0';
+
+    signal s_mem_in : mem_in := ((others => '0'), (others => '0'),
+    (others => '0'), MEM_NA);
+    signal s_mem_out : mem_out;
+begin
+    mem_stage: MIPS_MEM
+        generic map ("data/data_mem_init.txt", "data/mem_trans_test.txt")
+        port map (s_clk, s_mem_in, s_mem_out);
+
+    clock_process: process is
+    begin
+        s_clk <= not s_clk;
+        wait for CLK_T/2;
+    end process;
+
+    pipeline_assertions: process
+    begin
+        wait for CLK_T/5;      -- Stagger clock with assertions
+        s_mem_in.wb_reg_addr <= "10000"; -- $s0
+
+        -------------------------------- Test storing a word
+        s_mem_in.reg_to_mem <= x"10101010";
+        s_mem_in.alu_result <= x"00000020"; -- Address
+        s_mem_in.mux_mem <= MEM_NA;         -- Pass through
+
+        wait for CLK_T; -- Wait for a would-be write
+        s_mem_in.mux_mem <= MEM_LW; -- Now make sure that didn't get written
+        wait for CLK_T;
+        assert s_mem_out.val_f /= x"10101010";
+
+        -- Now write that word and make sure it was written
+        s_mem_in.mux_mem <= MEM_SW;
+        wait for CLK_T;
+        s_mem_in.mux_mem <= MEM_LW;
+        wait for CLK_T;
+        assert s_mem_out.val_f = x"10101010";
+
+        -------------------------------- Test storing a byte
+        s_mem_in.alu_result <= x"00000101"; -- Address
+        s_mem_in.reg_to_mem <= x"1234ABCD"; -- Data
+        s_mem_in.mux_mem <= MEM_SB;         -- Orders
+        wait for CLK_T;
+        s_mem_in.alu_result <= x"00000100"; -- Address
+        s_mem_in.mux_mem <= MEM_LW;         -- Orders
+        wait for CLK_T;
+        assert s_mem_out.val_f = x"0000CD00";
+
+        wait;
+    end process;
+end architecture;

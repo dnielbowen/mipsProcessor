@@ -13,11 +13,12 @@ VHD_OBJ = components.o \
 	  mem.o \
 	  atb_cpu.o
 
-ASM = data/instr_test_basic.s
+ASM = data/lui.s
 
-
-# TB = tb_mips_dmem
 TB = tb_mips_cpu
+# TB = tb_mips_dmem
+# TB = tb_mips_id
+# TB = tb_mips_mem
 # TB = tb_mips_reg
 IMPL = impl1
 IEEE = synopsys
@@ -30,13 +31,11 @@ all: $(VHD_OBJ)
 %.o: %.vhd
 	ghdl -a --ieee=$(IEEE) $<
 
-# Disabling asserts is probably a bad idea, but I just can't figure out the 
-# source of those uninitialized values at the begininng
 ex:
 	./$(TB)-$(IMPL) \
 	    --wave=$(TB)-$(IMPL).ghw \
 	    --stop-time=$(SIMDUR) \
-	    --ieee-asserts=disable
+	    --ieee-asserts=disable-at-0
 
 clean:
 	rm -f *.cf tb_* *.ghw *.vcd *.o tags

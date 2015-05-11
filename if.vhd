@@ -13,12 +13,16 @@ entity MIPS_IF is
 end entity;
 
 architecture impl1 of MIPS_IF is
-    signal s_pc : address := (others => '0');
-    signal s_instruction : word := (others => '0');
+    signal s_pc, s_pc_out : address := (others => '0');
+    signal s_instruction, s_instruction_out : word := (others => '0');
 begin
     imem1: MIPS_IMEM
         generic map (imem_filename)
         port map(s_pc, s_instruction);
+
+    -- Use of these _out signals allows the initial state to be 0
+    if_out.instruction <= s_instruction_out;
+    if_out.pc <= s_pc_out;
 
     pipeline_registers: process (clk) is
     begin
@@ -31,8 +35,8 @@ begin
                 end if;
             end if;
 
-            if_out.pc <= s_pc;
-            if_out.instruction <= s_instruction;
+            s_pc_out <= s_pc;
+            s_instruction_out <= s_instruction;
         end if;
     end process;
 end architecture;

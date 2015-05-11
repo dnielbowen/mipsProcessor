@@ -40,7 +40,7 @@ architecture impl1 of TB_MIPS_CPU is
 begin
     ------------------------------------------ FETCH
     if_stage: MIPS_IF
-        generic map ("data/instr_test_basic.s.txt")
+        generic map ("data/lui.s.txt")
         port map (s_clk, s_if_in, s_if_out);
 
     id_if_connections: process (s_id_out) is
@@ -101,25 +101,44 @@ begin
     clock_process: process is
     begin
         s_clk <= not s_clk;
-        wait for 5 ns;
+        wait for CLK_T/2;
     end process;
 
     pipeline_assertions: process
     begin
+        wait for CLK_T/5; -- Stagger assertions with the clock
         s_if_in.disable_pc_incr <= '0'; -- No pipeline stalls
 
         s_id_in.enable_ext_br_data <= '0'; -- No forwarding yet
         s_id_in.ext_br_data <= (others => '0');
 
-        -- From MEM
+        -- Writeback from Mem
         s_id_in.wb_reg_addr <= (others => '0'); -- R0
         s_id_in.wb_data <= (others => '0');
 
-        wait for 10 ns; -- Wait for rising edge to pass
-        wait for 10 ns; -- Let the nop pass
-        assert s_if_out.pc = x"00000004";
-        wait for 10 ns; -- Let the nop pass
-        assert s_id_out.val_a = x"FFFF0000"; -- From lui
+        wait for CLK_T; -- if should output nop
+        wait for CLK_T; -- if should output lui
+        assert s_if_out.instruction = x"3c101234"; -- lui $s0,0x1234
+        assert s_id_out.val_a = x"00000000";
+        assert s_id_out.val_b = x"00000000";
+        assert s_id_out.alu_op = F_SLL;
+        assert s_id_out.wb_reg_addr = "00000"; -- R0
+
+        wait for CLK_T; -- if=nop, id=lui, ex=(NA)
+        assert s_id_out.val_a = x"12340000";
+        assert s_id_out.val_b = x"00000000";
+        assert s_id_out.alu_op = F_ADD;
+        assert s_id_out.enable_delta_pc = false;
+        assert s_id_out.mux_mem = MEM_NA;
+        assert s_id_out.wb_reg_addr = "10000"; -- S0
+        assert s_ex_out.alu_result = x"00000000";
+        assert s_ex_out.wb_reg_addr = "00000";
+        assert s_ex_out.mux_mem = MEM_NA;
+
+        wait for CLK_T; -- if=nop, id=nop, ex=lui
+        assert s_ex_out.alu_result = x"12340000";
+        assert s_ex_out.wb_reg_addr = "10000";
+        assert s_ex_out.mux_mem = MEM_NA;
 
         wait;
     end process;

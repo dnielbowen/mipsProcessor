@@ -240,3 +240,72 @@ begin
         end if;
     end process;
 end architecture;
+
+------------------------------------------------------------
+
+library ieee;
+use ieee.std_logic_1164.all;
+
+use work.components.all;
+
+entity TB_MIPS_ID is
+end entity;
+
+architecture impl1 of TB_MIPS_ID is
+    signal s_clk : std_logic := '0';
+
+    -- ID Instruction Decode stage
+    signal s_id_in  : id_in  := (pc              => (others => '0'),
+                                 instruction     => (others => '0'),
+                                 enable_ext_br_data => '0',
+                                 ext_br_data     => (others => '0'),
+                                 wb_data         => (others => '0'),
+                                 wb_reg_addr     => (others => '0'));
+
+    signal s_id_out : id_out := (val_a           => (others => '0'),
+                                 val_b           => (others => '0'),
+                                 alu_op          => F_SLL,
+                                 sh_amnt         => (others => '0'),
+
+                                 enable_delta_pc => false,
+                                 delta_pc        => (others => '0'),
+
+                                 wb_reg_addr     => (others => '0'),
+                                 reg_to_mem      => (others => '0'),
+                                 mux_mem         => MEM_NA);
+begin
+    mips_id1 : MIPS_ID port map (s_clk, s_id_in, s_id_out);
+
+    clock_process: process is
+    begin
+        s_clk <= not s_clk;
+        wait for CLK_T/2;
+    end process;
+
+    pipeline_assertions: process
+    begin
+        wait for CLK_T/5;      -- Stagger clock with assertions
+        s_id_in.pc <= x"deadbeef";
+        s_id_in.instruction <= x"3c10ffff"; -- lui s0,0xffff
+
+        wait for CLK_T;
+        assert s_id_out.wb_reg_addr = "10000";
+        assert s_id_out.enable_delta_pc = false;
+        assert s_id_out.val_a = x"ffff0000";
+        assert s_id_out.val_b = x"00000000";
+        assert s_id_out.alu_op = F_ADD;
+        assert s_id_out.mux_mem = MEM_NA;
+        
+        -- Now test writeback
+        s_id_in.wb_reg_addr <= "10000"; -- $s0
+        s_id_in.wb_data <= x"12341234";
+        wait for CLK_T;
+        -- Make sure we didn't slip it through yet
+        assert s_id_out.reg_to_mem /= x"12341234";
+        wait for CLK_T;
+        -- Now we should see s0 at the output
+        assert s_id_out.reg_to_mem = x"12341234";
+
+        wait;
+    end process;
+end architecture;

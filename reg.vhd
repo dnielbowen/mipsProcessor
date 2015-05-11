@@ -47,8 +47,8 @@ end entity;
 architecture impl1 of TB_MIPS_REG is
     signal s_clk, s_wr_enable : std_logic := '0';
 
-    signal s_addr_a, s_addr_b, s_wr_addr : reg_address;
-    signal s_data_a, s_data_b, s_wr_data : word;
+    signal s_addr_a, s_addr_b, s_wr_addr : reg_address := (others => '0');
+    signal s_data_a, s_data_b, s_wr_data : word := (others => '0');
 begin
     uut : MIPS_REG
         port map (s_clk, s_addr_a, s_addr_b, s_data_a, s_data_b,

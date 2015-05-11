@@ -139,6 +139,7 @@ package COMPONENTS is
 
 
     constant MEM_DLY : time := 0.5 ns;
+    constant CLK_T : time := 10 ns;
 
     constant R_0  : reg_address := "00000"; -- $0, read-only zero
     constant R_31 : reg_address := "11111"; -- $ra, return address
