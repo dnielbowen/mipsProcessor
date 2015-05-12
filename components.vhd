@@ -267,24 +267,24 @@ package COMPONENTS is
         generic (imem_filename : string);
         port (
             clk    : in  std_logic;
-            if_in  : in  if_in;
-            if_out : out if_out
+            p_if_in  : in  if_in;
+            p_if_out : out if_out
         );
     end component;
 
     component MIPS_ID is
         port (
             clk    : in  std_logic;
-            id_in  : in  id_in;
-            id_out : out id_out
+            p_id_in  : in  id_in;
+            p_id_out : out id_out
         );
     end component;
 
     component MIPS_EX is
         port (
             clk    : in  std_logic;
-            ex_in  : in  ex_in;
-            ex_out : out ex_out
+            p_ex_in  : in  ex_in;
+            p_ex_out : out ex_out
         );
     end component;
 
@@ -295,8 +295,8 @@ package COMPONENTS is
         );
         port (
             clk    : in  std_logic;
-            mem_in  : in  mem_in;
-            mem_out : out mem_out
+            p_mem_in  : in  mem_in;
+            p_mem_out : out mem_out
         );
     end component;
 

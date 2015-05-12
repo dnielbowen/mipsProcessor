@@ -13,7 +13,7 @@ VHD_OBJ = components.o \
 	  mem.o \
 	  atb_cpu.o
 
-ASM = data/lui.s
+ASM = data/load_data.s
 
 TB = tb_mips_cpu
 # TB = tb_mips_dmem

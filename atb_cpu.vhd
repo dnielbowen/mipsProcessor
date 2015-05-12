@@ -40,7 +40,7 @@ architecture impl1 of TB_MIPS_CPU is
 begin
     ------------------------------------------ FETCH
     if_stage: MIPS_IF
-        generic map ("data/lui.s.txt")
+        generic map ("data/load_data.s.txt")
         port map (s_clk, s_if_in, s_if_out);
 
     id_if_connections: process (s_id_out) is
@@ -90,11 +90,11 @@ begin
 
     ------------------------------------------ WRITEBACK
 
---    id_wb_connections: process (s_mem_out) is
---    begin
---        s_id_in.wb_reg_addr <= s_mem_out.wb_reg_addr;
---        s_id_in.wb_data     <= s_mem_out.val_f;
---    end process;
+    id_wb_connections: process (s_mem_out) is
+    begin
+        s_id_in.wb_reg_addr <= s_mem_out.wb_reg_addr;
+        s_id_in.wb_data     <= s_mem_out.val_f;
+    end process;
 
     ------------------------------------------
 
@@ -112,10 +112,6 @@ begin
         s_id_in.enable_ext_br_data <= '0'; -- No forwarding yet
         s_id_in.ext_br_data <= (others => '0');
 
-        -- Writeback from Mem
-        s_id_in.wb_reg_addr <= (others => '0'); -- R0
-        s_id_in.wb_data <= (others => '0');
-
         wait for CLK_T; -- if should output nop
         wait for CLK_T; -- if should output lui
         assert s_if_out.instruction = x"3c101234"; -- lui $s0,0x1234
@@ -124,7 +120,7 @@ begin
         assert s_id_out.alu_op = F_SLL;
         assert s_id_out.wb_reg_addr = "00000"; -- R0
 
-        wait for CLK_T; -- if=nop, id=lui, ex=(NA)
+        wait for CLK_T; -- if=ori, id=lui, ex=(NA)
         assert s_id_out.val_a = x"12340000";
         assert s_id_out.val_b = x"00000000";
         assert s_id_out.alu_op = F_ADD;
@@ -135,10 +131,25 @@ begin
         assert s_ex_out.wb_reg_addr = "00000";
         assert s_ex_out.mux_mem = MEM_NA;
 
-        wait for CLK_T; -- if=nop, id=nop, ex=lui
+        wait for CLK_T; -- if=nop, id=ori, ex=lui
+        assert s_id_out.val_a = x"00000000"; -- Reg A
+        assert s_id_out.val_b = x"0000ABCD";
+        assert s_id_out.alu_op = F_OR;
         assert s_ex_out.alu_result = x"12340000";
         assert s_ex_out.wb_reg_addr = "10000";
         assert s_ex_out.mux_mem = MEM_NA;
+
+        wait for CLK_T; -- if=nop, id=nop, ex=ori, mem=lui
+        assert s_mem_out.wb_reg_addr = "10000";
+        assert s_mem_out.val_f = x"12340000";
+        wait for CLK_T; -- if=nop, id=nop, ex=nop, mem=ori wb=lui
+        assert s_mem_out.wb_reg_addr = "10001";
+
+        wait for CLK_T;
+        assert s_if_out.instruction = x"02309020"; -- add $s2,$s1,$s0
+        wait for 3*CLK_T; -- Propagate through id, ex, and mem
+        assert s_mem_out.wb_reg_addr = "10010";
+        assert s_mem_out.val_f = x"1234ABCD";
 
         wait;
     end process;

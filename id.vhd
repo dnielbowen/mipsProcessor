@@ -6,8 +6,8 @@ use work.components.all;
 entity MIPS_ID is
     port (
         clk    : in  std_logic;
-        id_in  : in  id_in;
-        id_out : out id_out
+        p_id_in  : in  id_in;
+        p_id_out : out id_out
     );
 end entity;
 
@@ -70,6 +70,9 @@ architecture impl1 of MIPS_ID is
     signal instr_opcode    : opcode;
 
     signal cw : control_word;
+    signal s_out : id_out := (
+        (others => '0'), (others => '0'), (others => '0'), (others => '0'),
+        false, (others => '0'), (others => '0'), (others => '0'), MEM_NA);
 begin
     reg_file: MIPS_REG port map(
         clk => clk,
@@ -78,20 +81,20 @@ begin
         data_a => reg_a,
         data_b => reg_b,
         wr_enable => enable_reg_wr,
-        wr_addr => id_in.wb_reg_addr,
-        wr_data => id_in.wb_data);
+        wr_addr => p_id_in.wb_reg_addr,
+        wr_data => p_id_in.wb_data);
 
-    enable_reg_wr <= '0' when (id_in.wb_reg_addr = R_0) else '1';
+    enable_reg_wr <= '0' when (p_id_in.wb_reg_addr = R_0) else '1';
 
     -- Extract portions of the instruction opcode
-    instr_imm     <= id_in.instruction(15 downto  0);
-    instr_jimm    <= id_in.instruction(25 downto  0);
-    instr_sh_amnt <= id_in.instruction(10 downto  6);
-    instr_func    <= id_in.instruction( 5 downto  0);
-    instr_rs      <= id_in.instruction(25 downto 21);
-    instr_rt      <= id_in.instruction(20 downto 16);
-    instr_rd      <= id_in.instruction(15 downto 11);
-    instr_opcode  <= id_in.instruction(31 downto 26);
+    instr_imm     <= p_id_in.instruction(15 downto  0);
+    instr_jimm    <= p_id_in.instruction(25 downto  0);
+    instr_sh_amnt <= p_id_in.instruction(10 downto  6);
+    instr_func    <= p_id_in.instruction( 5 downto  0);
+    instr_rs      <= p_id_in.instruction(25 downto 21);
+    instr_rt      <= p_id_in.instruction(20 downto 16);
+    instr_rd      <= p_id_in.instruction(15 downto 11);
+    instr_opcode  <= p_id_in.instruction(31 downto 26);
 
     -- Sign-extend immediate and jump-immediate formats
     imm_sign_ext  <= x"FFFF" & instr_imm
@@ -198,47 +201,49 @@ begin
         if rising_edge(clk) then
             case cw.branch_criteria is
                 when B_J =>
-                    id_out.delta_pc <= jimm_sign_ext(29 downto 0) & "00";
+                    s_out.delta_pc <= jimm_sign_ext(29 downto 0) & "00";
                 when others =>
-                    id_out.delta_pc <=  imm_sign_ext(29 downto 0) & "00";
+                    s_out.delta_pc <=  imm_sign_ext(29 downto 0) & "00";
             end case;
 
             case cw.branch_criteria is
-                when B_NA   => id_out.enable_delta_pc <= false;
-                when B_J    => id_out.enable_delta_pc <= true;
-                when B_EQ   => id_out.enable_delta_pc <= reg_a = reg_b;
-                when B_NE   => id_out.enable_delta_pc <= reg_a /= reg_b;
-                when B_LTZ  => id_out.enable_delta_pc <= reg_a(31) = '1';
-                when B_GTZ  => id_out.enable_delta_pc <= reg_a(31) = '0';
-                when B_LEZ  => id_out.enable_delta_pc <=
+                when B_NA   => s_out.enable_delta_pc <= false;
+                when B_J    => s_out.enable_delta_pc <= true;
+                when B_EQ   => s_out.enable_delta_pc <= reg_a = reg_b;
+                when B_NE   => s_out.enable_delta_pc <= reg_a /= reg_b;
+                when B_LTZ  => s_out.enable_delta_pc <= reg_a(31) = '1';
+                when B_GTZ  => s_out.enable_delta_pc <= reg_a(31) = '0';
+                when B_LEZ  => s_out.enable_delta_pc <=
                     (reg_a(31) = '1') or (reg_a = x"00000000");
-                when B_GEZ  => id_out.enable_delta_pc <=
+                when B_GEZ  => s_out.enable_delta_pc <=
                     (reg_a(31) = '0') or (reg_a = x"00000000");
-                when others => id_out.enable_delta_pc <= false;
+                when others => s_out.enable_delta_pc <= false;
             end case;
 
             case cw.mux_val_a is
-                when M_REGA  => id_out.val_a <= reg_a;
-                when M_IMMUP => id_out.val_a <= instr_imm & x"0000";
-                when M_R_0   => id_out.val_a <= (others => '0');
-                when M_PC    => id_out.val_a <= id_in.pc;
+                when M_REGA  => s_out.val_a <= reg_a;
+                when M_IMMUP => s_out.val_a <= instr_imm & x"0000";
+                when M_R_0   => s_out.val_a <= (others => '0');
+                when M_PC    => s_out.val_a <= p_id_in.pc;
             end case;
 
             case cw.mux_val_b is
-                when M_IMMS => id_out.val_b <= imm_sign_ext;
-                when M_IMMU => id_out.val_b <= x"0000" & instr_imm;
-                when M_REGB => id_out.val_b <= reg_b;
-                when M_R_0  => id_out.val_b <= (others => '0');
+                when M_IMMS => s_out.val_b <= imm_sign_ext;
+                when M_IMMU => s_out.val_b <= x"0000" & instr_imm;
+                when M_REGB => s_out.val_b <= reg_b;
+                when M_R_0  => s_out.val_b <= (others => '0');
             end case;
 
-            id_out.alu_op <= cw.alu_op;
-            id_out.sh_amnt <= instr_sh_amnt; -- Only observed on shifts
+            s_out.alu_op <= cw.alu_op;
+            s_out.sh_amnt <= instr_sh_amnt; -- Only observed on shifts
 
-            id_out.wb_reg_addr <= cw.wb_reg_addr;
-            id_out.reg_to_mem <= reg_b;
-            id_out.mux_mem <= cw.mux_mem;
+            s_out.wb_reg_addr <= cw.wb_reg_addr;
+            s_out.reg_to_mem <= reg_b;
+            s_out.mux_mem <= cw.mux_mem;
         end if;
     end process;
+
+    p_id_out <= s_out;
 end architecture;
 
 ------------------------------------------------------------

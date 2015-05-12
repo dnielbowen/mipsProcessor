@@ -21,6 +21,36 @@ The stages:
 
 # Misc
 
+## How does a data hazard look?
+
+Here's an implementation of
+
+    lui $s0,0x1234
+    lui $s1,0xABCD
+    add $s2,$s1,$s0
+
+  - IF
+        - `instruction = add $s2,$s1,$s0`
+  - ID
+        - `wb_reg_addr = "10001"`
+  - EX
+        - `alu_result = x"ABCD0000"`
+        - `wb_reg_addr = "10000"`
+  - MEM
+  - WB
+
+- Non-branch data hazards
+    ...are only important at the EX stage. Thus I'd have a mux before `val_a` 
+    and `val_b` on the EX stage --- this ex hazard mux would check the ex, mem, 
+    and wb's `wb_reg_addr` for the current writeback address (the ID would also 
+    need to output the address of reg A and B for comparison) and forward 
+    appropriately.
+
+- Non-branch stall (load)
+    The ex hazard detection mux would check `mem_in.mux_mem` for a load 
+    (`MEM_LW`, etc) with a `wb_reg_addr` of the current register. If this were 
+    to happen, all stages before
+
 ## How are branches handled?
 
 In the single-cycle implementation, branch tests are performed in the ALU. For 
@@ -42,12 +72,12 @@ pipeline stalls are unavoidable.
 
 New data is only produced in the execute and mem stages.
 
-- 1 stall: If an R-type instruction uses data from a preceeding load
+- 1 stall: If an R-type instruction uses data from a preceding load
 
     `lw $t0,0x($t1)`        # IF  ID  EX  ME  WB
                             #               <-Data $t0 available
     `add $t2,$t0,$t1`       # IF  ID  EX  ME  WB
-                            #           <-Data $t0 needed
+                            #         <-Data $t0 needed
 
 - 1 stall: If a branch uses data from a preceding ALU operation
 
