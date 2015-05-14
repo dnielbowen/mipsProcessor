@@ -13,8 +13,8 @@ entity MIPS_IF is
 end entity;
 
 architecture impl1 of MIPS_IF is
-    signal s_pc : address := (others => '0');
-    signal s_instruction : word := (others => '0');
+    signal s_pc, s_pc_out : address := (others => '0');
+    signal s_instruction, s_instruction_out : word := (others => '0');
 
     signal s_out : if_out := ((others => '0'), (others => '0'));
 begin
@@ -25,18 +25,16 @@ begin
     pipeline_registers: process (clk) is
     begin
         if rising_edge(clk) then
+            if p_if_in.disable_pc_incr = '0' then
+                if p_if_in.enable_delta_pc then
+                    s_pc <= unsigned(s_pc) + 4 + signed(p_if_in.delta_pc);
+                else
+                    s_pc <= unsigned(s_pc) + 4;
+                end if;
+            end if;
+
             s_out.pc <= s_pc;
             s_out.instruction <= s_instruction;
-
-            if p_if_in.disable_pc_incr then
-                puts("Holding");
-                --s_pc <= unsigned(s_pc);
-            elsif p_if_in.enable_delta_pc then
-                s_pc <= unsigned(s_pc) + 4 + signed(p_if_in.delta_pc);
-            else
-                s_pc <= unsigned(s_pc) + 4;
-                print_word(x"FFFFFFFF", s_pc);
-            end if;
         end if;
     end process;
 
