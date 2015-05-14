@@ -74,8 +74,9 @@ begin
                 when MEM_LHU =>
                     s_out.val_f <= x"0000" & mem_read_data(15 downto 0);
                 when MEM_LW  => s_out.val_f <= mem_read_data;
-                when others =>
-                    s_out.val_f <= p_mem_in.alu_result;
+                when MEM_SW | MEM_SH | MEM_SB =>
+                    s_out.val_f <= p_mem_in.reg_to_mem;
+                when MEM_NA => s_out.val_f <= p_mem_in.alu_result;
             end case;
 
             -- Note that on stores, we don't want to save anything --- however 

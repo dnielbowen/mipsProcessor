@@ -46,10 +46,45 @@ Here's an implementation of
     need to output the address of reg A and B for comparison) and forward 
     appropriately.
 
-- Non-branch stall (load)
-    The ex hazard detection mux would check `mem_in.mux_mem` for a load 
-    (`MEM_LW`, etc) with a `wb_reg_addr` of the current register. If this were 
-    to happen, all stages before
+    -- XXX Does this incorrectly forward data destined for register $0?
+    s_ex_in.val_a <= s_ex_out.alu_result when
+                     (s_ex_out.wb_reg_addr = s_id_out.addr_a) else
+                     s_mem_out.val_f when
+                     (s_mem_out.wb_reg_addr = s_id_out.addr_a) else
+    s_ex_in.val_b <= s_ex_out.alu_result when
+                     (s_ex_out.wb_reg_addr = s_id_out.addr_b) else
+                     s_mem_out.val_f when
+                     (s_mem_out.wb_reg_addr = s_id_out.addr_b) else
+
+- Non-branch stall data hazards (memory data hazard)
+    The EX `val_a/val_b` hazard detection mux should check `mem_in.mux_mem` for 
+    a load (`MEM_LW`, etc) with a `wb_reg_addr` of the current register. If 
+    this were to happen, the PC would need to be frozen for that cycle and 
+    `ex_in.mux_mem` and `ex_in.wb_reg_addr` would need to be zero'd (to cancel 
+    the EX stage --- it will effectively be redone since the PC didn't move).
+
+    If we detect usage of a register on a load
+
+    stall_detection: process (s_ex_out) is
+    begin
+        case s_ex_out.mux_mem is
+            -- We need to stall if a load of our registers hasn't yet executed
+            when MEM_LW | MEM_LH | MEM_LB | MEM_LHW | MEM_LBU =>
+                if s_ex_out.wb_reg_addr /= R_0 then
+                    if (s_id_out.addr_a = s_ex_out.wb_reg_addr or
+                        s_id_out.addr_b = s_ex_out.wb_reg_addr) then
+                        s_if_in.disable_pc_incr = '1';
+                        s_ex_in.nop = true;
+                    end if;
+                end if;
+            when others =>
+                s_if_in.disable_pc_incr = '0';
+                s_ex_in.nop = false;
+        end case;
+    end process;
+
+For branch hazard detection, I may have to add some branch ID capability to the 
+IF stage so that branch hazards can be detected.
 
 ## How are branches handled?
 

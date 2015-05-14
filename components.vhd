@@ -43,7 +43,7 @@ package COMPONENTS is
         delta_pc        : word;
             -- Adds delta_pc to incremented PC (for branches)
 
-        disable_pc_incr : std_logic;
+        disable_pc_incr : boolean;
             -- Prevents PC from being incremented (for stalls)
     end record;
 
@@ -63,11 +63,6 @@ package COMPONENTS is
             -- Forwarded data for branching. It's the responsibility of the CPU 
             -- entity to determine data/branch hazards and present the 
             -- appropriate data here.
-
-        wb_data     : word;
-        wb_reg_addr : reg_address;
-            -- Represents the address to write wb_data to. If zero (register 
-            -- r0), wb_data is ignored.
     end record;
 
     type id_out is record
@@ -78,6 +73,10 @@ package COMPONENTS is
 
         enable_delta_pc : boolean;
         delta_pc    : word;
+
+        addr_a      :reg_address;
+        addr_b      :reg_address;
+            -- These are used in hazard detection/resolution
 
         wb_reg_addr : reg_address;
             -- Dictates which register the result is written to during WB. If 
@@ -98,6 +97,11 @@ package COMPONENTS is
         val_b : word;
         alu_op : op_func;
         sh_amnt : std_logic_vector(4 downto 0);
+
+        nop : boolean;
+            -- When nop is true, the contents of this stage are discarded, 
+            -- regardless of their content (useful during stalls to discard 
+            -- redundantly-fetched instructions)
 
         reg_to_mem   : word;
 
@@ -134,6 +138,27 @@ package COMPONENTS is
         wb_reg_addr : reg_address;
     end record;
 
+    -- WB Writeback stage
+    type wb_in is record
+        wb_data     : word;
+        wb_reg_addr : reg_address;
+            -- Represents the address to write wb_data to. If zero (register 
+            -- r0), wb_data is ignored.
+    end record;
+
+    -- DEBUG
+
+    type pipeline_registers is record
+        if_in   : if_in;
+        if_out  : if_out;
+        id_in   : id_in;
+        id_out  : id_out;
+        ex_in   : ex_in;
+        ex_out  : ex_out;
+        mem_in  : mem_in;
+        mem_out : mem_out;
+        wb_in   : wb_in;
+    end record;
 
     ---CONSTANTS---------------------------------------------------- {{{1
 
@@ -272,11 +297,12 @@ package COMPONENTS is
         );
     end component;
 
-    component MIPS_ID is
+    component MIPS_ID_WB is
         port (
             clk    : in  std_logic;
             p_id_in  : in  id_in;
-            p_id_out : out id_out
+            p_id_out : out id_out;
+            p_wb_in  : in  wb_in
         );
     end component;
 
@@ -300,19 +326,56 @@ package COMPONENTS is
         );
     end component;
 
+    component MIPS_NO_HAZARDS is
+        generic (
+            imem_filename      : string;
+            dmem_init_filename : string;
+            dmem_filename      : string
+        );
+        port (
+            clk : in std_logic;
+            reg_debug : out pipeline_registers
+        );
+    end component;
+
+    component MIPS_DATA_HAZARDS is
+        generic (
+            imem_filename      : string;
+            dmem_init_filename : string;
+            dmem_filename      : string
+        );
+        port (
+            clk : in std_logic;
+            reg_debug : out pipeline_registers
+        );
+    end component;
+
     ---FUNCTIONS---------------------------------------------------- {{{1
 
     procedure print_word (p_addr : in address; p_word : in word);
+    procedure puts (str : in string);
 end package;
 
 package body COMPONENTS is
     procedure print_word (p_addr : in address; p_word : in word) is
         variable buf: line;
     begin
+        write(buf, now);
+        write(buf, string'(": "));
         write(buf, string'("0x"));
         hwrite(buf, p_addr);
-        write(buf, string'(": 0x"));
+        write(buf, string'("-> 0x"));
         hwrite(buf, p_word);
         writeline(OUTPUT, buf);
     end procedure;
+
+    procedure puts (str : in string) is
+        variable buf: line;
+    begin
+        write(buf, now);
+        write(buf, string'(": "));
+        write(buf, str);
+        writeline(OUTPUT, buf);
+    end procedure;
+
 end package body;

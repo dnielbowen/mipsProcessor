@@ -11,12 +11,16 @@ VHD_OBJ = components.o \
 	  id.o \
 	  ex.o \
 	  mem.o \
+	  mips_no_hazards.o \
+	  mips_data_hazards.o \
 	  atb_cpu.o
 
-ASM = data/load_data.s
+ASM = data/data_hazards.s
 
-TB = tb_mips_cpu
+# TB = tb_mips_no_hazards
+# TB = tb_mips_data_hazards
 # TB = tb_mips_dmem
+TB = tb_mips_if
 # TB = tb_mips_id
 # TB = tb_mips_mem
 # TB = tb_mips_reg

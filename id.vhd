@@ -3,15 +3,16 @@ use ieee.std_logic_1164.all;
 use ieee.std_logic_arith.all; -- vs numeric_std because this allows uint+int
 use work.components.all;
 
-entity MIPS_ID is
+entity MIPS_ID_WB is
     port (
-        clk    : in  std_logic;
+        clk      : in  std_logic;
         p_id_in  : in  id_in;
-        p_id_out : out id_out
+        p_id_out : out id_out;
+        p_wb_in  : in  wb_in
     );
 end entity;
 
-architecture impl1 of MIPS_ID is
+architecture impl1 of MIPS_ID_WB is
     type mux_val_a_t is (
         M_REGA,  -- Register A value
         M_IMMUP, -- Upper immediate, useful for lui
@@ -72,7 +73,8 @@ architecture impl1 of MIPS_ID is
     signal cw : control_word;
     signal s_out : id_out := (
         (others => '0'), (others => '0'), (others => '0'), (others => '0'),
-        false, (others => '0'), (others => '0'), (others => '0'), MEM_NA);
+        false, (others => '0'), (others => '0'), (others => '0'),
+        (others => '0'), (others => '0'), MEM_NA);
 begin
     reg_file: MIPS_REG port map(
         clk => clk,
@@ -81,10 +83,10 @@ begin
         data_a => reg_a,
         data_b => reg_b,
         wr_enable => enable_reg_wr,
-        wr_addr => p_id_in.wb_reg_addr,
-        wr_data => p_id_in.wb_data);
+        wr_addr => p_wb_in.wb_reg_addr,
+        wr_data => p_wb_in.wb_data);
 
-    enable_reg_wr <= '0' when (p_id_in.wb_reg_addr = R_0) else '1';
+    enable_reg_wr <= '0' when (p_wb_in.wb_reg_addr = R_0) else '1';
 
     -- Extract portions of the instruction opcode
     instr_imm     <= p_id_in.instruction(15 downto  0);
@@ -104,7 +106,7 @@ begin
                      when instr_jimm(25) = '1' else
                      "000000" & instr_jimm;
     
-    instruction_decode: process (instr_func) is
+    instruction_decode: process (instr_opcode, clk) is
     begin
         case instr_opcode is
             -- R-type ALU ops
@@ -221,10 +223,20 @@ begin
             end case;
 
             case cw.mux_val_a is
-                when M_REGA  => s_out.val_a <= reg_a;
+                when M_REGA => s_out.addr_a <= instr_rs;
+                when others => s_out.addr_a <= R_0;
+            end case;
+
+            case cw.mux_val_b is
+                when M_REGB => s_out.addr_b <= instr_rt;
+                when others => s_out.addr_b <= R_0;
+            end case;
+
+            case cw.mux_val_a is
                 when M_IMMUP => s_out.val_a <= instr_imm & x"0000";
                 when M_R_0   => s_out.val_a <= (others => '0');
                 when M_PC    => s_out.val_a <= p_id_in.pc;
+                when M_REGA  => s_out.val_a <= reg_a;
             end case;
 
             case cw.mux_val_b is
@@ -263,8 +275,8 @@ architecture impl1 of TB_MIPS_ID is
     signal s_id_in  : id_in  := (pc              => (others => '0'),
                                  instruction     => (others => '0'),
                                  enable_ext_br_data => '0',
-                                 ext_br_data     => (others => '0'),
-                                 wb_data         => (others => '0'),
+                                 ext_br_data     => (others => '0'));
+    signal s_wb_in  : wb_in  := (wb_data         => (others => '0'),
                                  wb_reg_addr     => (others => '0'));
 
     signal s_id_out : id_out := (val_a           => (others => '0'),
@@ -275,11 +287,14 @@ architecture impl1 of TB_MIPS_ID is
                                  enable_delta_pc => false,
                                  delta_pc        => (others => '0'),
 
+                                 addr_a          => (others => '0'),
+                                 addr_b          => (others => '0'),
+
                                  wb_reg_addr     => (others => '0'),
                                  reg_to_mem      => (others => '0'),
                                  mux_mem         => MEM_NA);
 begin
-    mips_id1 : MIPS_ID port map (s_clk, s_id_in, s_id_out);
+    mips_id1 : MIPS_ID_WB port map (s_clk, s_id_in, s_id_out, s_wb_in);
 
     clock_process: process is
     begin
@@ -302,8 +317,8 @@ begin
         assert s_id_out.mux_mem = MEM_NA;
         
         -- Now test writeback
-        s_id_in.wb_reg_addr <= "10000"; -- $s0
-        s_id_in.wb_data <= x"12341234";
+        s_wb_in.wb_reg_addr <= "10000"; -- $s0
+        s_wb_in.wb_data <= x"12341234";
         wait for CLK_T;
         -- Make sure we didn't slip it through yet
         assert s_id_out.reg_to_mem /= x"12341234";

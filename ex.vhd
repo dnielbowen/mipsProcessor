@@ -28,10 +28,18 @@ begin
     pipeline_registers: process (clk) is
     begin
         if rising_edge(clk) then
-            s_out.wb_reg_addr <= p_ex_in.wb_reg_addr;
-            s_out.mux_mem <= p_ex_in.mux_mem;
-            s_out.reg_to_mem <= p_ex_in.reg_to_mem;
+            if p_ex_in.nop then
+                -- Contents are neither written to memory nor written back to a 
+                -- register, thus are effetively discarded
+                s_out.mux_mem <= MEM_NA;
+                s_out.wb_reg_addr <= R_0;
+            else
+                s_out.mux_mem <= p_ex_in.mux_mem;
+                s_out.wb_reg_addr <= p_ex_in.wb_reg_addr;
+            end if;
+
             s_out.alu_result <= s_alu_result;
+            s_out.reg_to_mem <= p_ex_in.reg_to_mem;
         end if;
     end process;
 
