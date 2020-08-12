@@ -1,0 +1,7 @@
+00000000 00000000        sll zero,zero,0x0
+00000004 3c101234            lui s0,0x1234
+00000008 3631abcd         ori s1,s1,0xabcd
+0000000C 00000000        sll zero,zero,0x0
+00000010 00000000        sll zero,zero,0x0
+00000014 00000000        sll zero,zero,0x0
+00000018 02309020             add s2,s1,s0
